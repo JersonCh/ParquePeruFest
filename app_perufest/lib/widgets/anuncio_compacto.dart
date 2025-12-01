@@ -63,90 +63,115 @@ class AnuncioCompacto extends StatelessWidget {
   }
 
   Widget _buildAnuncioCard(BuildContext context, Anuncio anuncio) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Colors.orange.shade300,
-          width: 1.5,
-        ),
-      ),
-      child: InkWell(
-        onTap: () => _mostrarDetalleAnuncio(context, anuncio),
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.orange.shade50,
-                Colors.orange.shade100.withOpacity(0.3),
-              ],
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      child: Material(
+        elevation: 3,
+        borderRadius: BorderRadius.circular(16),
+        shadowColor: Colors.black.withOpacity(0.08),
+        child: InkWell(
+          onTap: () => _mostrarDetalleAnuncio(context, anuncio),
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+              border: Border.all(
+                color: const Color(0xFFE5E7EB),
+                width: 1,
+              ),
             ),
-          ),
-          child: Column(
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Encabezado de patrocinio (opcional)
+              // Encabezado de patrocinio elegante
               if (mostrarPatrocinado) ...[
                 Row(
                   children: [
-                    Icon(
-                      Icons.local_offer,
-                      size: 16,
-                      color: Colors.orange.shade700,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'PATROCINADO',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange.shade700,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    const Spacer(),
-                    Icon(
-                      Icons.info_outline,
-                      size: 14,
-                      color: Colors.grey.shade500,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-              ],
-              
-              // Contenido principal
-              Row(
-                children: [
-                  // Imagen si existe
-                  if (anuncio.imagenUrl != null)
                     Container(
-                      width: 60,
-                      height: 60,
-                      margin: const EdgeInsets.only(right: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        image: DecorationImage(
-                          image: NetworkImage(anuncio.imagenUrl!),
-                          fit: BoxFit.cover,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
+                        color: const Color(0xFFF3F4F6),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.campaign_rounded,
+                            size: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Patrocinado',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade600,
+                              letterSpacing: 0.3,
+                            ),
                           ),
                         ],
                       ),
                     ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.more_horiz,
+                        size: 16,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+              ],
+              
+              // Contenido principal elegante
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Imagen mejorada
+                  if (anuncio.imagenUrl != null)
+                    Container(
+                      width: 72,
+                      height: 72,
+                      margin: const EdgeInsets.only(right: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.06),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          anuncio.imagenUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            color: Colors.grey.shade100,
+                            child: Icon(
+                              Icons.image_rounded,
+                              color: Colors.grey.shade400,
+                              size: 32,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   
-                  // Texto
+                  // Contenido de texto mejorado
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,36 +179,66 @@ class AnuncioCompacto extends StatelessWidget {
                         Text(
                           anuncio.titulo,
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Colors.black87,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            color: Color(0xFF111827),
+                            height: 1.3,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           anuncio.contenido,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF6B7280),
+                            height: 1.4,
+                            fontWeight: FontWeight.w400,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        // Badge de acción sutil
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3B82F6).withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'Ver más',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF3B82F6),
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
                   
-                  // Flecha
-                  Icon(
-                    Icons.chevron_right,
-                    color: Colors.grey.shade400,
-                    size: 20,
+                  const SizedBox(width: 12),
+                  
+                  // Icono de acción elegante
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Colors.grey.shade500,
+                      size: 16,
+                    ),
                   ),
                 ],
               ),
             ],
+            ),
           ),
         ),
       ),
@@ -194,64 +249,151 @@ class AnuncioCompacto extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.local_offer, color: Colors.orange.shade700),
-            const SizedBox(width: 8),
-            const Expanded(
-              child: Text(
-                'CONTENIDO PATROCINADO',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              anuncio.titulo,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            if (anuncio.imagenUrl != null)
-              Container(
-                width: double.infinity,
-                height: 120,
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(
-                    image: NetworkImage(anuncio.imagenUrl!),
-                    fit: BoxFit.cover,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 400),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header elegante
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F4F6),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.campaign_rounded,
+                          size: 16,
+                          color: Colors.grey.shade600,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Contenido Patrocinado',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(
+                      Icons.close_rounded,
+                      color: Colors.grey.shade500,
+                    ),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.grey.shade50,
+                      shape: const CircleBorder(),
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Título
+              Text(
+                anuncio.titulo,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF111827),
+                  height: 1.3,
                 ),
               ),
-            Text(
-              anuncio.contenido,
-              style: const TextStyle(fontSize: 14),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Válido hasta: ${_formatearFecha(anuncio.fechaFin)}',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
+              
+              const SizedBox(height: 16),
+              
+              // Imagen si existe
+              if (anuncio.imagenUrl != null) ...[
+                Container(
+                  width: double.infinity,
+                  height: 160,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      anuncio.imagenUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.grey.shade100,
+                        child: Icon(
+                          Icons.image_rounded,
+                          color: Colors.grey.shade400,
+                          size: 48,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+              
+              // Contenido
+              Text(
+                anuncio.contenido,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Color(0xFF374151),
+                  height: 1.5,
+                ),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
+              
+              const SizedBox(height: 20),
+              
+              // Footer con fecha
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.schedule_rounded,
+                      size: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Válido hasta: ${_formatearFecha(anuncio.fechaFin)}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
