@@ -13,6 +13,7 @@ import 'viewmodels/agenda_list_viewmodel.dart';
 import 'viewmodels/faq_viewmodel.dart';
 import 'viewmodels/noticias_viewmodel.dart';
 import 'viewmodels/noticias_visitante_viewmodel.dart';
+import 'viewmodels/tickets_viewmodel.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FAQViewModel()),
         ChangeNotifierProvider(create: (context) => NoticiasViewModel()),
         ChangeNotifierProvider(create: (_) => NoticiasVisitanteViewModel()),
+        ChangeNotifierProvider(create: (_) => TicketsViewModel()),
       ],
       child: MaterialApp(
         title: 'PeruFest',

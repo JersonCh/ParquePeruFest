@@ -9,6 +9,8 @@ import 'visitante/mapa_view.dart';
 import 'visitante/faq_visitante_simple.dart';
 import 'visitante/agenda_view.dart';
 import 'visitante/noticias_visitante_view.dart';
+import 'visitante/comprar_entradas_page.dart';
+import 'visitante/mis_tickets_page.dart';
 import '../widgets/banner_anuncios.dart';
 
 class DashboardUserView extends StatefulWidget {
@@ -689,6 +691,58 @@ class _DashboardUserViewState extends State<DashboardUserView> {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Opción: Comprar Entradas
+                            InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ComprarEntradasPage(),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.shopping_cart, color: Color(0xFF1976D2)),
+                                    const SizedBox(width: 18),
+                                    const Text(
+                                      'Comprar Entradas',
+                                      style: TextStyle(fontSize: 16, color: Color(0xFF1976D2), fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const Divider(height: 1),
+                            // Opción: Mis Tickets
+                            InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const MisTicketsPage(),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.confirmation_number, color: Color(0xFF1976D2)),
+                                    const SizedBox(width: 18),
+                                    const Text(
+                                      'Mis Tickets',
+                                      style: TextStyle(fontSize: 16, color: Color(0xFF1976D2), fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const Divider(height: 1),
                             InkWell(
                               onTap: () {
                                 Navigator.pop(context);
@@ -698,7 +752,7 @@ class _DashboardUserViewState extends State<DashboardUserView> {
                                 _pageController.animateToPage(4, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
                               },
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                                 child: Row(
                                   children: [
                                     const Icon(Icons.help_center_outlined, color: Color(0xFF64748B)),
@@ -708,7 +762,7 @@ class _DashboardUserViewState extends State<DashboardUserView> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 18),
+                            const Divider(height: 1),
                             InkWell(
                               onTap: () {
                                 Navigator.pop(context);
@@ -718,7 +772,7 @@ class _DashboardUserViewState extends State<DashboardUserView> {
                                 _pageController.animateToPage(5, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
                               },
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                                 child: Row(
                                   children: [
                                     const Icon(Icons.person_outline, color: Color(0xFF64748B)),

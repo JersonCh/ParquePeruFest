@@ -8,6 +8,8 @@ import 'admin/anuncios_main_page.dart';
 import 'admin/faq_admin_simple.dart';
 import 'admin/mapa_admin_view.dart';
 import 'admin/estadisticas_page.dart';
+import 'admin/dashboard_ventas_page.dart';
+import 'admin/validar_tickets_page.dart';
 import 'perfil_administrador_view.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
@@ -31,6 +33,8 @@ class _DashboardAdminViewState extends State<DashboardAdminView> {
     'Gestión de FAQs',
     'Gestión de Zonas',
     'Estadísticas',
+    'Dashboard de Ventas',
+    'Validar Tickets',
     'Mi Perfil',
   ];
 
@@ -44,6 +48,8 @@ class _DashboardAdminViewState extends State<DashboardAdminView> {
     const FAQAdminSimple(),
     const MapaAdminView(),
     const EstadisticasPage(),
+    const DashboardVentasPage(),
+    const ValidarTicketsPage(),
   ];
 
   Widget _buildPerfilPage() {
@@ -196,6 +202,17 @@ class _DashboardAdminViewState extends State<DashboardAdminView> {
             ),
             const Divider(),
             _buildDrawerItem(
+              icon: Icons.confirmation_number,
+              title: 'Ventas de Tickets',
+              index: 8,
+            ),
+            _buildDrawerItem(
+              icon: Icons.qr_code_scanner,
+              title: 'Validar Tickets',
+              index: 9,
+            ),
+            const Divider(),
+            _buildDrawerItem(
               icon: Icons.bar_chart,
               title: 'Estadísticas',
               index: 7,
@@ -203,7 +220,7 @@ class _DashboardAdminViewState extends State<DashboardAdminView> {
             _buildDrawerItem(
               icon: Icons.person,
               title: 'Mi Perfil',
-              index: 8,
+              index: 10,
             ),
             const Divider(),
             ListTile(
@@ -218,7 +235,9 @@ class _DashboardAdminViewState extends State<DashboardAdminView> {
         ),
       ),
       body: SafeArea(
-        child: _currentIndex == 8 ? _buildPerfilPage() : _pages[_currentIndex],
+        child: _currentIndex == 10 
+            ? _buildPerfilPage() 
+            : (_currentIndex < _pages.length ? _pages[_currentIndex] : _buildPerfilPage()),
       ),
     );
   }
