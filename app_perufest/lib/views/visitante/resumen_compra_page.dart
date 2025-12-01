@@ -4,6 +4,10 @@ import '../../models/ticket.dart';
 import '../../viewmodels/tickets_viewmodel.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../services/culqi_service.dart';
+import '../../services/pdf_service.dart';
+import '../../services/ticket_storage_service.dart';
+import '../../services/email_service.dart';
+import 'package:open_file/open_file.dart';
 
 class ResumenCompraPage extends StatefulWidget {
   final TipoEntrada tipoEntrada;
@@ -529,8 +533,91 @@ class _ResumenCompraPageState extends State<ResumenCompraPage> {
     final resultado = await _mostrarDialogoPago();
     
     if (resultado == true && mounted) {
-      // Pago exitoso
-      _mostrarDialogoExito();
+      setState(() {
+        _procesando = true;
+      });
+      
+      try {
+        final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+        
+        // Simular creación de ticket
+        // En producción, esto se haría a través del TicketsService
+        final ticketId = 'ticket_${DateTime.now().millisecondsSinceEpoch}';
+        
+        // Crear un ticket temporal para generar el PDF
+        final ticketTemporal = Ticket(
+          id: ticketId,
+          userId: authViewModel.currentUser!.id,
+          transactionId: 'txn_${DateTime.now().millisecondsSinceEpoch}',
+          tipo: widget.tipoEntrada,
+          cantidadPersonas: widget.cantidadPersonas,
+          tipoTicket: widget.tipoTicket,
+          monto: _total,
+          fechaCompra: DateTime.now(),
+          fechaValidez: widget.fechaVisita,
+          nombreComprador: widget.nombreComprador,
+          dniComprador: widget.dniComprador,
+          emailComprador: widget.emailComprador,
+          telefonoComprador: widget.telefonoComprador,
+          placaVehiculo: widget.placaVehiculo,
+          tipoVehiculo: widget.tipoVehiculo,
+          estado: EstadoTicket.pagado,
+          qrData: 'QR-$ticketId',
+          usosRestantes: widget.tipoTicket == TipoTicket.grupal ? widget.cantidadPersonas : 1,
+        );
+        
+        // Generar el PDF del comprobante
+        final pdfBytes = await PdfService.generarComprobante(
+          ticket: ticketTemporal,
+          nombreTitular: widget.nombreComprador,
+          dniTitular: widget.dniComprador,
+          emailTitular: widget.emailComprador,
+          telefonoTitular: widget.telefonoComprador,
+          placaVehiculo: widget.placaVehiculo,
+          tipoVehiculo: widget.tipoVehiculo,
+          fechaVisita: widget.fechaVisita,
+          totalPagado: _total,
+          cantidadAdultos: widget.cantidadPersonas,
+          cantidadNinos: 0,
+          cantidadAdultosMayor: 0,
+          metodoPago: 'Culqi',
+        );
+        
+        // Guardar PDF en almacenamiento local
+        final pdfPath = await TicketStorageService.guardarTicketPdf(
+          ticketId: ticketId,
+          pdfBytes: pdfBytes,
+        );
+        
+        // Enviar PDF por email (simulado)
+        final emailService = EmailService();
+        await emailService.enviarTicketPorEmail(
+          destinatario: widget.emailComprador,
+          nombreDestinatario: widget.nombreComprador,
+          ticketId: ticketId,
+          pdfPath: pdfPath,
+        );
+        
+        // Mostrar diálogo de éxito con opción de ver PDF
+        if (mounted) {
+          _mostrarDialogoExito(pdfPath);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error al procesar el pago: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _procesando = false;
+          });
+        }
+      }
     }
   }
 
@@ -573,7 +660,7 @@ class _ResumenCompraPageState extends State<ResumenCompraPage> {
     );
   }
 
-  void _mostrarDialogoExito() {
+  void _mostrarDialogoExito([String? pdfPath]) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -585,15 +672,28 @@ class _ResumenCompraPageState extends State<ResumenCompraPage> {
             Text('¡Pago exitoso!'),
           ],
         ),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Tu compra se ha procesado correctamente.'),
-            SizedBox(height: 8),
-            Text(
+            const Text('Tu compra se ha procesado correctamente.'),
+            const SizedBox(height: 8),
+            const Text(
               'Recibirás un correo con tu comprobante digital.',
               style: TextStyle(fontSize: 14),
             ),
+            if (pdfPath != null) ...[
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  await OpenFile.open(pdfPath);
+                },
+                icon: const Icon(Icons.picture_as_pdf),
+                label: const Text('Ver comprobante PDF'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                ),
+              ),
+            ],
           ],
         ),
         actions: [

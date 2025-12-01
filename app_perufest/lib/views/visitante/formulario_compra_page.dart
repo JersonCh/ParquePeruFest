@@ -430,39 +430,52 @@ class _FormularioCompraPageState extends State<FormularioCompraPage> {
   Widget _buildSelectorFecha() {
     return Card(
       elevation: 2,
-      child: InkWell(
-        onTap: _seleccionarFecha,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              const Icon(Icons.calendar_today, color: Color(0xFF1976D2)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.calendar_today, color: Color(0xFF1976D2)),
+                SizedBox(width: 8),
+                Text(
+                  'Fecha de visita',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 16),
+            
+            InkWell(
+              onTap: _seleccionarFecha,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade400),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
                   children: [
-                    const Text(
-                      'Fecha de visita',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
+                    const Icon(Icons.event, color: Color(0xFF1976D2)),
+                    const SizedBox(width: 12),
                     Text(
                       _formatearFecha(_fechaVisita),
                       style: const TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                    const Spacer(),
+                    const Icon(Icons.arrow_drop_down, color: Colors.grey),
                   ],
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios, size: 16),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -484,17 +497,6 @@ class _FormularioCompraPageState extends State<FormularioCompraPage> {
       initialDate: _fechaVisita,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 90)),
-      locale: const Locale('es', 'ES'),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF1976D2),
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
     
     if (picked != null) {
