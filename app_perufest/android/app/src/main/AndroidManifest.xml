@@ -61,6 +61,27 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            
+            <!-- Deep Links para MercadoPago -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <!-- Deep Link Scheme personalizado -->
+                <data android:scheme="appperufest"
+                      android:host="payment"/>
+            </intent-filter>
+            
+            <!-- App Links para interceptar URLs HTTPS de MercadoPago -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <!-- URLs HTTPS de retorno -->
+                <data android:scheme="https"
+                      android:host="parqueperufest.com"
+                      android:pathPrefix="/payment"/>
+            </intent-filter>
         </activity>
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" 
             android:exported="false" />

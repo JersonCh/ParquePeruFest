@@ -37,6 +37,8 @@ dependencies:
   mobile_scanner: ^3.5.0
   printing: ^5.11.0
   geolocator: ^10.1.0
+  flutter_custom_tabs: ^2.1.0
+  app_links: ^6.3.2
 
 dev_dependencies:
   flutter_test:
