@@ -290,7 +290,7 @@ class _StandsPageState extends State<StandsPage> {
                       )
                       : DropdownButtonHideUnderline(
                         child: DropdownButton<Zona>(
-                          value: standsViewModel.zonaSeleccionada,
+                          value: null,
                           isExpanded: true,
                           hint: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -300,10 +300,19 @@ class _StandsPageState extends State<StandsPage> {
                             child: Text(
                               standsViewModel.zonasDisponibles.isEmpty
                                   ? 'No hay zonas disponibles para este evento'
+                                  : standsViewModel.zonaSeleccionada != null
+                                  ? standsViewModel.zonaSeleccionada!.nombre
                                   : 'Seleccione una zona',
-                              style: const TextStyle(
-                                color: Colors.grey,
+                              style: TextStyle(
+                                color:
+                                    standsViewModel.zonaSeleccionada != null
+                                        ? Colors.black87
+                                        : Colors.grey,
                                 fontSize: 16,
+                                fontWeight:
+                                    standsViewModel.zonaSeleccionada != null
+                                        ? FontWeight.w500
+                                        : FontWeight.normal,
                               ),
                             ),
                           ),
