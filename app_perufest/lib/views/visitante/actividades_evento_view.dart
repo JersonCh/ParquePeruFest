@@ -107,101 +107,99 @@ class _ActividadesEventoViewState extends State<ActividadesEventoView>
   }
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 250.0,
+      expandedHeight: 280.0,
       floating: false,
       pinned: true,
       backgroundColor: const Color(0xFF8B1B1B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
+      ),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back, color: Colors.white),
         onPressed: () => Navigator.pop(context),
       ),
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF8B1B1B).withOpacity(0.9),
-                const Color(0xFF8B1B1B),
-                const Color(0xFF8B0000),
-              ],
+          decoration: const BoxDecoration(
+            color: Color(0xFF8B1B1B), // Guinda sólido
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
             ),
           ),
           child: Stack(
             children: [
+              // Decoración sutil de fondo
               Positioned(
-                right: -30,
-                top: -30,
+                right: -20,
+                top: 40,
                 child: Icon(
-                  Icons.celebration,
-                  size: 150,
-                  color: Colors.white.withOpacity(0.1),
+                  Icons.celebration_outlined,
+                  size: 100,
+                  color: Colors.white.withOpacity(0.08),
                 ),
               ),
+              // Contenido principal centrado
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      // Icono simple
+                      const Icon(
+                        Icons.festival,
+                        size: 60,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      // Título del evento
                       Text(
-                        widget.evento.nombre,
+                        widget.evento.nombre.toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 32,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                          shadows: [
-                            Shadow(
-                              offset: Offset(2.0, 2.0),
-                              blurRadius: 4.0,
-                              color: Color.fromARGB(127, 0, 0, 0),
-                            ),
-                          ],
+                          letterSpacing: 1.5,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.calendar_today,
-                            color: Colors.white.withOpacity(0.9),
-                            size: 18,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${_formatearFecha(widget.evento.fechaInicio)} - ${_formatearFecha(widget.evento.fechaFin)}',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
+                      
                       const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.location_on,
+                      
+                      // Fecha destacada
+                      Text(
+                        '${_formatearFecha(widget.evento.fechaInicio)} - ${_formatearFecha(widget.evento.fechaFin)}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 0.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      // Subtítulo simple
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        child: Text(
+                          '"Todas las actividades del evento"',
+                          style: TextStyle(
                             color: Colors.white.withOpacity(0.9),
-                            size: 18,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: 0.3,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            widget.evento.lugar,
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ],
                   ),
@@ -212,16 +210,39 @@ class _ActividadesEventoViewState extends State<ActividadesEventoView>
         ),
       ),
       bottom: _diasEvento.isNotEmpty
-          ? TabBar(
-              controller: _tabController,
-              isScrollable: _diasEvento.length > 3,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white60,
-              indicatorColor: Colors.white,
-              indicatorWeight: 3,
-              tabs: _diasEvento.map((dia) => Tab(
-                text: _formatearDiaTab(dia),
-              )).toList(),
+          ? PreferredSize(
+              preferredSize: const Size.fromHeight(50),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Color(0xFF6B1515), // Guinda más oscuro
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
+                  ),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  isScrollable: _diasEvento.length > 3,
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.white.withOpacity(0.6),
+                  indicatorColor: Colors.white,
+                  indicatorWeight: 2,
+                  indicatorPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  labelStyle: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 0.3,
+                  ),
+                  tabs: _diasEvento.map((dia) => Tab(
+                    text: _formatearDiaTab(dia),
+                  )).toList(),
+                ),
+              ),
             )
           : null,
     );
@@ -275,145 +296,134 @@ class _ActividadesEventoViewState extends State<ActividadesEventoView>
   }
   Widget _buildTarjetaActividad(Actividad actividad, Color color) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       child: Card(
-        elevation: 4,
+        elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              colors: [
-                color.withOpacity(0.8),
-                color.withOpacity(0.6),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.white,
+            border: Border.all(
+              color: color.withOpacity(0.3),
+              width: 1,
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header con horario
+                // Header compacto
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Indicador de color y horario
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
+                      width: 4,
+                      height: 60,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(20),
+                        color: color,
+                        borderRadius: BorderRadius.circular(2),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                    ),
+                    const SizedBox(width: 12),
+                    // Contenido principal
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Icons.access_time,
-                            color: Colors.white,
-                            size: 16,
+                          // Horario y zona en la misma línea
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: color.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  actividad.horario,
+                                  style: TextStyle(
+                                    color: color,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  actividad.zona,
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(height: 8),
+                          // Nombre de la actividad
                           Text(
-                            actividad.horario,
+                            actividad.nombre,
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: Color(0xFF2D2D2D),
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          // Descripción en cuadro gris
+                          if (actividad.descripcion.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.grey.shade300,
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: Text(
+                                actividad.descripcion,
+                                style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontSize: 13,
+                                  height: 1.3,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 6),
+                          // Duración en una línea compacta
+                          Text(
+                            'Duración: ${actividad.duracion}',
+                            style: TextStyle(
+                              color: Colors.grey.shade500,
                               fontSize: 12,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        actividad.zona,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
+                    // Botón compacto a la derecha
+                    _buildBotonAgendarCompacto(actividad, color),
                   ],
                 ),
-
-                const SizedBox(height: 16),
-
-                // Nombre de la actividad
-                Text(
-                  actividad.nombre,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-      
-                
-                // Información adicional
-                Row(
-                  children: [
-                    Icon(
-                      Icons.schedule,
-                      color: Colors.white.withOpacity(0.8),
-                      size: 16,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Duración: ${actividad.duracion}',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-
-                if (actividad.zona.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        color: Colors.white.withOpacity(0.8),
-                        size: 16,
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          actividad.zona,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-
-                const SizedBox(height: 16),
-
-                // BOTÓN AGENDAR - NUEVA FUNCIONALIDAD
-                _buildBotonAgendar(actividad),
               ],
             ),
           ),
@@ -421,6 +431,62 @@ class _ActividadesEventoViewState extends State<ActividadesEventoView>
       ),
     );
   }
+  // Nuevo botón compacto para el diseño mejorado
+  Widget _buildBotonAgendarCompacto(Actividad actividad, Color color) {
+    return Consumer<AgendaViewModel>(
+      builder: (context, agendaViewModel, child) {
+        final estaEnAgenda = agendaViewModel.estaEnAgenda(actividad.id);
+        final estaCargando = agendaViewModel.estaCargando(actividad.id);
+        
+        final ahora = DateTime.now();
+        final yaInicio = ahora.isAfter(actividad.fechaInicio.add(const Duration(minutes: 1)));
+        
+        if (yaInicio && !estaEnAgenda) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Text(
+              'Iniciada',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          );
+        }
+        
+        return GestureDetector(
+          onTap: estaCargando ? null : () => _manejarBotonAgendar(actividad),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: estaEnAgenda ? Colors.green : color,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: estaCargando 
+                ? const SizedBox(
+                    width: 12,
+                    height: 12,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Icon(
+                    estaEnAgenda ? Icons.check : Icons.add,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+          ),
+        );
+      },
+    );
+  }
+
   // Replace the _buildBotonAgendar method
   Widget _buildBotonAgendar(Actividad actividad) {
     return Consumer<AgendaViewModel>(

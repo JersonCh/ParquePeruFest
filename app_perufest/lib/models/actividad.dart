@@ -4,6 +4,7 @@ import '../services/timezone.dart';
 class Actividad {
   final String id;
   final String nombre;
+  final String descripcion;
   final DateTime fechaInicio;
   final DateTime fechaFin;
   final String zona;
@@ -14,6 +15,7 @@ class Actividad {
   Actividad({
     required this.id,
     required this.nombre,
+    this.descripcion = '',
     required this.fechaInicio,
     required this.fechaFin,
     required this.zona,
@@ -28,6 +30,7 @@ class Actividad {
     return Actividad(
       id: doc.id,
       nombre: data['nombre'] ?? '',
+      descripcion: data['descripcion'] ?? '',
       fechaInicio: (data['fechaInicio'] as Timestamp).toDate(),
       fechaFin: (data['fechaFin'] as Timestamp).toDate(),
       zona: data['zona'] ?? '',
@@ -41,6 +44,7 @@ class Actividad {
   Map<String, dynamic> toFirestore() {
     return {
       'nombre': nombre,
+      'descripcion': descripcion,
       'fechaInicio': Timestamp.fromDate(fechaInicio),
       'fechaFin': Timestamp.fromDate(fechaFin),
       'zona': zona,
@@ -54,6 +58,7 @@ class Actividad {
   Actividad copyWith({
     String? id,
     String? nombre,
+    String? descripcion,
     DateTime? fechaInicio,
     DateTime? fechaFin,
     String? zona,
@@ -64,6 +69,7 @@ class Actividad {
     return Actividad(
       id: id ?? this.id,
       nombre: nombre ?? this.nombre,
+      descripcion: descripcion ?? this.descripcion,
       fechaInicio: fechaInicio ?? this.fechaInicio,
       fechaFin: fechaFin ?? this.fechaFin,
       zona: zona ?? this.zona,

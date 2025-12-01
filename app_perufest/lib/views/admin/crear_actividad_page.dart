@@ -25,6 +25,7 @@ class CrearActividadPage extends StatefulWidget {
 class _CrearActividadPageState extends State<CrearActividadPage> {
   final _formKey = GlobalKey<FormState>();
   final _nombreController = TextEditingController();
+  final _descripcionController = TextEditingController();
   final _fechaController = TextEditingController();
   final _horaInicioController = TextEditingController();
   final _horaFinController = TextEditingController();
@@ -54,6 +55,7 @@ class _CrearActividadPageState extends State<CrearActividadPage> {
       if (widget.esEdicion) {
         final actividad = widget.actividad!;
         _nombreController.text = actividad.nombre;
+        _descripcionController.text = actividad.descripcion;
         _fechaSeleccionada = DateTime(
           actividad.fechaInicio.year,
           actividad.fechaInicio.month,
@@ -94,6 +96,7 @@ class _CrearActividadPageState extends State<CrearActividadPage> {
   @override
   void dispose() {
     _nombreController.dispose();
+    _descripcionController.dispose();
     _fechaController.dispose();
     _horaInicioController.dispose();
     _horaFinController.dispose();
@@ -138,6 +141,8 @@ class _CrearActividadPageState extends State<CrearActividadPage> {
               _buildSeccionEventoInfo(),
               const SizedBox(height: 24),
               _buildCampoNombre(),
+              const SizedBox(height: 20),
+              _buildCampoDescripcion(),
               const SizedBox(height: 20),
               _buildCampoFecha(),
               const SizedBox(height: 20),
@@ -206,6 +211,26 @@ class _CrearActividadPageState extends State<CrearActividadPage> {
       },
       maxLines: 2,
       textCapitalization: TextCapitalization.sentences,
+    );
+  }
+
+  Widget _buildCampoDescripcion() {
+    return TextFormField(
+      controller: _descripcionController,
+      decoration: const InputDecoration(
+        labelText: 'Descripción de la actividad',
+        hintText: 'Describe los detalles de la actividad...',
+        prefixIcon: Icon(Icons.description),
+        border: OutlineInputBorder(),
+        alignLabelWithHint: true,
+      ),
+      maxLines: 4,
+      minLines: 3,
+      textCapitalization: TextCapitalization.sentences,
+      validator: (value) {
+        // La descripción es opcional, no validamos
+        return null;
+      },
     );
   }
 
@@ -456,6 +481,7 @@ class _CrearActividadPageState extends State<CrearActividadPage> {
       if (widget.esEdicion) {
         final actividadActualizada = widget.actividad!.copyWith(
           nombre: _nombreController.text.trim(),
+          descripcion: _descripcionController.text.trim(),
           fechaInicio: fechaInicio,
           fechaFin: fechaFin,
           zona: _zonaSeleccionada!,
@@ -466,6 +492,7 @@ class _CrearActividadPageState extends State<CrearActividadPage> {
         final nuevaActividad = Actividad(
           id: '',
           nombre: _nombreController.text.trim(),
+          descripcion: _descripcionController.text.trim(),
           fechaInicio: fechaInicio,
           fechaFin: fechaFin,
           zona: _zonaSeleccionada!,
