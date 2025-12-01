@@ -22,106 +22,264 @@ class _ComprarEntradasPageState extends State<ComprarEntradasPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Comprar Entradas'),
-        backgroundColor: const Color(0xFF1976D2),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Título
-            const Text(
-              '¿Qué deseas adquirir?',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+      backgroundColor: const Color(0xFFF7F7FF),
+      body: CustomScrollView(
+        slivers: [
+          // AppBar con estilo personalizado
+          SliverAppBar(
+            expandedHeight: 200.0,
+            floating: false,
+            pinned: true,
+            backgroundColor: const Color.fromARGB(255, 122, 0, 37),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
             ),
-            
-            const SizedBox(height: 8),
-            
-            Text(
-              'Selecciona el tipo de entrada y la cantidad de personas',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-              ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Opción Entrada
-            _buildOpcionTicket(
-              tipo: TipoEntrada.entrada,
-              titulo: 'Entrada al Parque',
-              precio: PreciosConfig.entradaAdulto, // Precio real
-              icono: Icons.confirmation_number,
-              color: const Color(0xFF4CAF50),
-              descripcion: 'Acceso completo al parque',
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Opción Cochera
-            _buildOpcionTicket(
-              tipo: TipoEntrada.cochera,
-              titulo: 'Cochera',
-              precio: PreciosConfig.cocheraAuto, // Precio real
-              icono: Icons.local_parking,
-              color: const Color(0xFFFF9800),
-              descripcion: 'Estacionamiento seguro',
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Opción Combo
-            _buildOpcionTicket(
-              tipo: TipoEntrada.combo,
-              titulo: 'Combo (Entrada + Cochera)',
-              precio: PreciosConfig.calcularPrecioCombo(
-                precioEntrada: PreciosConfig.entradaAdulto,
-                precioCochera: PreciosConfig.cocheraAuto,
-              ), // Precio real con descuento
-              icono: Icons.card_giftcard,
-              color: const Color(0xFF9C27B0),
-              descripcion: 'Paquete completo - Ahorra tiempo',
-              destacado: true,
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Selector de cantidad (solo si es entrada o combo)
-            if (_tipoSeleccionado == TipoEntrada.entrada || 
-                _tipoSeleccionado == TipoEntrada.combo)
-              _buildSelectorCantidad(),
-            
-            const SizedBox(height: 24),
-            
-            // Resumen
-            if (_tipoSeleccionado != null)
-              _buildResumen(),
-            
-            const SizedBox(height: 24),
-            
-            // Botón continuar
-            ElevatedButton(
-              onPressed: _tipoSeleccionado != null ? _continuarCompra : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1976D2),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color.fromARGB(255, 122, 0, 37),
+                      Color(0xFF8B1538),
+                      Color(0xFFB91C3C),
+                    ],
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      right: -30,
+                      top: -30,
+                      child: Icon(
+                        Icons.shopping_cart,
+                        size: 150,
+                        color: Colors.white.withOpacity(0.1),
+                      ),
+                    ),
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.confirmation_number_rounded,
+                              size: 48,
+                              color: Colors.white,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Comprar Entradas',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Adquiere tu acceso al evento',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: const Text(
-                'Continuar',
-                style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+          ),
+          // Contenido principal
+          SliverToBoxAdapter(
+            child: Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  // Contenedor con bordes redondeados
+                  Container(
+                    margin: const EdgeInsets.only(top: 0),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(24),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Título elegante
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.shopping_bag_rounded,
+                                  color: Color.fromARGB(255, 122, 0, 37),
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '¿Qué deseas adquirir?',
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF1A1A1A),
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Selecciona el tipo de entrada y cantidad',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF666666),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+            
+                          const SizedBox(height: 24),
+            
+                          // Opción Entrada
+                          _buildOpcionTicket(
+                            tipo: TipoEntrada.entrada,
+                            titulo: 'Entrada al Parque',
+                            precio: PreciosConfig.entradaAdulto,
+                            icono: Icons.confirmation_number_rounded,
+                            color: const Color.fromARGB(255, 122, 0, 37),
+                            descripcion: 'Acceso completo al parque y actividades',
+                          ),
+                          
+                          const SizedBox(height: 16),
+                          
+                          // Opción Cochera
+                          _buildOpcionTicket(
+                            tipo: TipoEntrada.cochera,
+                            titulo: 'Cochera',
+                            precio: PreciosConfig.cocheraAuto,
+                            icono: Icons.local_parking_rounded,
+                            color: const Color(0xFF0891B2),
+                            descripcion: 'Estacionamiento seguro para tu vehículo',
+                          ),
+                          
+                          const SizedBox(height: 16),
+                          
+                          // Opción Combo
+                          _buildOpcionTicket(
+                            tipo: TipoEntrada.combo,
+                            titulo: 'Combo (Entrada + Cochera)',
+                            precio: PreciosConfig.calcularPrecioCombo(
+                              precioEntrada: PreciosConfig.entradaAdulto,
+                              precioCochera: PreciosConfig.cocheraAuto,
+                            ),
+                            icono: Icons.card_giftcard_rounded,
+                            color: const Color(0xFF059669),
+                            descripcion: 'Paquete completo - ¡Ahorra más!',
+                            destacado: true,
+                          ),
+            
+                          const SizedBox(height: 24),
+            
+                          // Selector de cantidad (solo si es entrada o combo)
+                          if (_tipoSeleccionado == TipoEntrada.entrada || 
+                              _tipoSeleccionado == TipoEntrada.combo)
+                            _buildSelectorCantidad(),
+            
+                          const SizedBox(height: 24),
+            
+                          // Resumen
+                          if (_tipoSeleccionado != null)
+                            _buildResumen(),
+            
+                          const SizedBox(height: 24),
+            
+                          // Botón continuar elegante
+                          Container(
+                            width: double.infinity,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              gradient: _tipoSeleccionado != null
+                                  ? const LinearGradient(
+                                      colors: [
+                                        Color.fromARGB(255, 122, 0, 37),
+                                        Color(0xFF8B1538),
+                                      ],
+                                    )
+                                  : null,
+                              color: _tipoSeleccionado == null ? Colors.grey.shade300 : null,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: _tipoSeleccionado != null
+                                  ? [
+                                      BoxShadow(
+                                        color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.3),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: ElevatedButton(
+                              onPressed: _tipoSeleccionado != null ? _continuarCompra : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: _tipoSeleccionado != null ? Colors.white : Colors.grey.shade500,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Continuar con la compra',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: _tipoSeleccionado != null ? Colors.white : Colors.grey.shade500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -139,102 +297,162 @@ class _ComprarEntradasPageState extends State<ComprarEntradasPage> {
     
     return GestureDetector(
       onTap: () => setState(() => _tipoSeleccionado = tipo),
-      child: Container(
-        padding: const EdgeInsets.all(16),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: seleccionado ? color.withOpacity(0.1) : Colors.white,
+          color: Colors.white,
           border: Border.all(
-            color: seleccionado ? color : Colors.grey.shade300,
-            width: seleccionado ? 2 : 1,
+            color: seleccionado ? color : Colors.grey.shade200,
+            width: seleccionado ? 2.5 : 1,
           ),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: seleccionado
-              ? [
-                  BoxShadow(
-                    color: color.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: seleccionado 
+                  ? color.withOpacity(0.2) 
+                  : Colors.black.withOpacity(0.05),
+              blurRadius: seleccionado ? 12 : 6,
+              offset: Offset(0, seleccionado ? 4 : 2),
+            ),
+          ],
         ),
-        child: Row(
+        child: Column(
           children: [
-            // Radio button
-            Icon(
-              seleccionado ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: seleccionado ? color : Colors.grey,
-              size: 24,
-            ),
-            
-            const SizedBox(width: 12),
-            
-            // Icono
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icono, color: color, size: 32),
-            ),
-            
-            const SizedBox(width: 12),
-            
-            // Información
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    titulo,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: seleccionado ? color : Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    descripcion,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Precio
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            Row(
               children: [
-                Text(
-                  'S/. ${precio.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: color,
+                // Radio button más elegante
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: seleccionado ? color : Colors.grey.shade400,
+                      width: 2,
+                    ),
+                    color: seleccionado ? color : Colors.transparent,
+                  ),
+                  child: seleccionado
+                      ? const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 16,
+                        )
+                      : null,
+                ),
+                
+                const SizedBox(width: 16),
+                
+                // Icono con mejor diseño
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: seleccionado 
+                          ? [color.withOpacity(0.2), color.withOpacity(0.1)]
+                          : [Colors.grey.shade100, Colors.grey.shade50],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    icono,
+                    color: seleccionado ? color : Colors.grey.shade600,
+                    size: 28,
                   ),
                 ),
+                
+                const SizedBox(width: 16),
+                
+                // Información
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        titulo,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: seleccionado ? color : const Color(0xFF1A1A1A),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        descripcion,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Precio y badges en la parte inferior
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 if (destacado)
                   Container(
-                    margin: const EdgeInsets.only(top: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(4),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF059669), Color(0xFF10B981)],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text(
-                      '¡Popular!',
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.star_rounded,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        const Text(
+                          '¡Popular!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  const SizedBox.shrink(),
+                
+                // Precio
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'S/. ${precio.toStringAsFixed(2)}',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
+                        color: color,
                       ),
                     ),
-                  ),
+                    Text(
+                      'por ${tipo == TipoEntrada.cochera ? 'vehículo' : tipo == TipoEntrada.combo ? 'combo' : 'persona'}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
@@ -244,76 +462,135 @@ class _ComprarEntradasPageState extends State<ComprarEntradasPage> {
   }
 
   Widget _buildSelectorCantidad() {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.people, color: Color(0xFF1976D2)),
-                const SizedBox(width: 8),
-                const Text(
-                  '¿Cuántas personas?',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ],
-            ),
+                child: const Icon(
+                  Icons.people_rounded,
+                  color: Color.fromARGB(255, 122, 0, 37),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                '¿Cuántas personas?',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A1A1A),
+                ),
+              ),
+            ],
+          ),
             
             const SizedBox(height: 16),
             
-            // Selector simple
-            Row(
-              children: [
-                const Text(
-                  'Cantidad:',
-                  style: TextStyle(fontSize: 16),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: _cantidadPersonas > 1
-                      ? () {
-                          setState(() {
-                            _cantidadPersonas--;
-                            _ajustarDetalle();
-                          });
-                        }
-                      : null,
-                  icon: const Icon(Icons.remove_circle_outline),
-                  color: const Color(0xFF1976D2),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '$_cantidadPersonas',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+            // Selector elegante
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Cantidad de personas:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF374151),
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  onPressed: _cantidadPersonas < 20
-                      ? () {
-                          setState(() {
-                            _cantidadPersonas++;
-                            _ajustarDetalle();
-                          });
-                        }
-                      : null,
-                  icon: const Icon(Icons.add_circle_outline),
-                  color: const Color(0xFF1976D2),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: _cantidadPersonas > 1
+                              ? () {
+                                  setState(() {
+                                    _cantidadPersonas--;
+                                    _ajustarDetalle();
+                                  });
+                                }
+                              : null,
+                          icon: Icon(
+                            Icons.remove_rounded,
+                            color: _cantidadPersonas > 1 
+                                ? const Color.fromARGB(255, 122, 0, 37) 
+                                : Colors.grey.shade400,
+                          ),
+                        ),
+                        Container(
+                          width: 60,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            '$_cantidadPersonas',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1A1A1A),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: _cantidadPersonas < 20
+                              ? () {
+                                  setState(() {
+                                    _cantidadPersonas++;
+                                    _ajustarDetalle();
+                                  });
+                                }
+                              : null,
+                          icon: Icon(
+                            Icons.add_rounded,
+                            color: _cantidadPersonas < 20 
+                                ? const Color.fromARGB(255, 122, 0, 37) 
+                                : Colors.grey.shade400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             
             const SizedBox(height: 12),
@@ -325,11 +602,19 @@ class _ComprarEntradasPageState extends State<ComprarEntradasPage> {
                   _mostrarDetalle = !_mostrarDetalle;
                 });
               },
+              style: TextButton.styleFrom(
+                foregroundColor: const Color.fromARGB(255, 122, 0, 37),
+              ),
               icon: Icon(
                 _mostrarDetalle ? Icons.expand_less : Icons.expand_more,
+                color: const Color.fromARGB(255, 122, 0, 37),
               ),
               label: Text(
                 _mostrarDetalle ? 'Ocultar detalle' : 'Especificar edades',
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 122, 0, 37),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             
@@ -362,8 +647,7 @@ class _ComprarEntradasPageState extends State<ComprarEntradasPage> {
                 });
               }),
             ],
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -379,7 +663,7 @@ class _ComprarEntradasPageState extends State<ComprarEntradasPage> {
               ? () => onChanged(valor - 1)
               : null,
           icon: const Icon(Icons.remove_circle_outline, size: 20),
-          color: const Color(0xFF1976D2),
+          color: const Color.fromARGB(255, 122, 0, 37),
         ),
         SizedBox(
           width: 40,
@@ -395,7 +679,7 @@ class _ComprarEntradasPageState extends State<ComprarEntradasPage> {
         IconButton(
           onPressed: () => onChanged(valor + 1),
           icon: const Icon(Icons.add_circle_outline, size: 20),
-          color: const Color(0xFF1976D2),
+          color: const Color.fromARGB(255, 122, 0, 37),
         ),
       ],
     );
@@ -433,81 +717,150 @@ class _ComprarEntradasPageState extends State<ComprarEntradasPage> {
     
     double total = precioUnitario * cantidad;
     
-    return Card(
-      elevation: 2,
-      color: const Color(0xFF1976D2).withOpacity(0.1),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'RESUMEN',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-              ),
-            ),
-            const Divider(height: 16),
-            
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _getTipoTexto(),
-                  style: const TextStyle(fontSize: 14),
-                ),
-                Text(
-                  '$cantidad',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 8),
-            
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Precio unitario:',
-                  style: TextStyle(fontSize: 14),
-                ),
-                Text(
-                  'S/. ${precioUnitario.toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ],
-            ),
-            
-            const Divider(height: 16),
-            
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'TOTAL:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'S/. ${total.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1976D2),
-                  ),
-                ),
-              ],
-            ),
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.fromARGB(255, 122, 0, 37),
+            Color(0xFF8B1538),
           ],
         ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.receipt_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'RESUMEN DE COMPRA',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 20),
+          
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _getTipoTexto(),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      '$cantidad ${cantidad == 1 ? 'unidad' : 'unidades'}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 12),
+                
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Precio unitario:',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    Text(
+                      'S/. ${precioUnitario.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 20),
+          
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: Colors.white.withOpacity(0.3),
+          ),
+          
+          const SizedBox(height: 20),
+          
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'TOTAL A PAGAR:',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'S/. ${total.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const Text(
+                    'Soles peruanos',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
