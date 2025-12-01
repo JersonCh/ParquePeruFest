@@ -41,6 +41,30 @@ class _FormularioCompraPageState extends State<FormularioCompraPage> {
   DateTime _fechaVisita = DateTime.now().add(const Duration(days: 1));
 
   @override
+  void initState() {
+    super.initState();
+    _cargarDatosUsuario();
+  }
+
+  void _cargarDatosUsuario() {
+    // Cargar datos del usuario logueado
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    final usuario = authViewModel.currentUser;
+    
+    if (usuario != null) {
+      _nombreController.text = usuario.nombre;
+      _emailController.text = usuario.correo;
+      if (usuario.telefono.isNotEmpty) {
+        _telefonoController.text = usuario.telefono;
+      }
+      // El DNI no está en el modelo Usuario, pero si se agregara en el futuro:
+      // if (usuario.dni != null && usuario.dni!.isNotEmpty) {
+      //   _dniController.text = usuario.dni!;
+      // }
+    }
+  }
+
+  @override
   void dispose() {
     _nombreController.dispose();
     _dniController.dispose();
@@ -188,6 +212,9 @@ class _FormularioCompraPageState extends State<FormularioCompraPage> {
   }
 
   Widget _buildDatosComprador() {
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    final datosAutocompletados = authViewModel.currentUser != null;
+    
     return Card(
       elevation: 2,
       child: Padding(
@@ -195,15 +222,52 @@ class _FormularioCompraPageState extends State<FormularioCompraPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              _tipoTicketSeleccionado == TipoTicket.grupal
-                  ? 'Datos del responsable'
-                  : 'Datos del comprador',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Text(
+                  _tipoTicketSeleccionado == TipoTicket.grupal
+                      ? 'Datos del responsable'
+                      : 'Datos del comprador',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (datosAutocompletados) ...[
+                  const SizedBox(width: 8),
+                  const Tooltip(
+                    message: 'Datos cargados de tu perfil',
+                    child: Icon(
+                      Icons.check_circle,
+                      color: Color(0xFF4CAF50),
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ],
             ),
+            
+            if (datosAutocompletados)
+              Container(
+                margin: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.info_outline, size: 16, color: Color(0xFF4CAF50)),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Los datos se cargaron desde tu perfil. Puedes editarlos si es necesario.',
+                        style: TextStyle(fontSize: 12, color: Color(0xFF2E7D32)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             
             const SizedBox(height: 16),
             
