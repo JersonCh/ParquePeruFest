@@ -50,7 +50,6 @@ class _NoticiasVisitanteViewState extends State<NoticiasVisitanteView> {
               controller: _scrollController,
               slivers: [
                 _buildHeaderSection(),
-                _buildFiltrosSection(viewModel),
                 if (viewModel.noticias.isNotEmpty && !viewModel.isLoading)
                   _buildFeaturedStory(viewModel.noticias.first),
                 _buildNoticiasContent(viewModel),
@@ -71,18 +70,13 @@ class _NoticiasVisitanteViewState extends State<NoticiasVisitanteView> {
     
     return SliverToBoxAdapter(
       child: Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
+        padding: const EdgeInsets.symmetric(vertical: 19, horizontal: 20),
+        decoration: const BoxDecoration(
+          color: Color.fromARGB(255, 122, 0, 37),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(24),
+            bottomRight: Radius.circular(24),
+          ),
         ),
         child: Column(
           children: [
@@ -93,19 +87,19 @@ class _NoticiasVisitanteViewState extends State<NoticiasVisitanteView> {
                 Container(
                   height: 1,
                   width: 60,
-                  color: const Color(0xFFD0D0D0),
+                  color: Colors.white.withOpacity(0.3),
                 ),
                 const SizedBox(width: 12),
-                Icon(
+                const Icon(
                   Icons.auto_awesome,
                   size: 16,
-                  color: Colors.red[700],
+                  color: Colors.white,
                 ),
                 const SizedBox(width: 12),
                 Container(
                   height: 1,
                   width: 60,
-                  color: const Color(0xFFD0D0D0),
+                  color: Colors.white.withOpacity(0.3),
                 ),
               ],
             ),
@@ -117,7 +111,7 @@ class _NoticiasVisitanteViewState extends State<NoticiasVisitanteView> {
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.w900,
-                color: Color(0xFF1A1A1A),
+                color: Colors.white,
                 letterSpacing: 2,
                 height: 1.1,
               ),
@@ -127,10 +121,10 @@ class _NoticiasVisitanteViewState extends State<NoticiasVisitanteView> {
             // Fecha
             Text(
               '${now.day} DE ${meses[now.month - 1]} DE ${now.year}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: Colors.white70,
                 letterSpacing: 1,
               ),
             ),
@@ -140,15 +134,15 @@ class _NoticiasVisitanteViewState extends State<NoticiasVisitanteView> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.red.shade50,
+                color: Colors.white.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
+              child: const Text(
                 '"Todas las noticias del festival"',
                 style: TextStyle(
                   fontSize: 13,
                   fontStyle: FontStyle.italic,
-                  color: Colors.red[800],
+                  color: Colors.white,
                   fontWeight: FontWeight.w500,
                 ),
               ),

@@ -33,197 +33,122 @@ class _AgendaViewState extends State<AgendaView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE2E8F0),
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(),
-          Consumer<AgendaListViewModel>(
-            builder: (context, agendaViewModel, child) {
-              if (agendaViewModel.isLoading) {
-                return const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
+      backgroundColor: const Color(0xFFF7F7FF),
+      body: Column(
+        children: [
+          _buildMainHeader(),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              color: Colors.white,
+              child: CustomScrollView(
+                slivers: [
+                  Consumer<AgendaListViewModel>(
+                    builder: (context, agendaViewModel, child) {
+                      if (agendaViewModel.isLoading) {
+                        return const SliverFillRemaining(
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
 
-              if (agendaViewModel.error.isNotEmpty) {
-                return SliverFillRemaining(
-                  child: _buildErrorState(agendaViewModel.error),
-                );
-              }
+                      if (agendaViewModel.error.isNotEmpty) {
+                        return SliverFillRemaining(
+                          child: _buildErrorState(agendaViewModel.error),
+                        );
+                      }
 
-              if (agendaViewModel.actividadesAgenda.isEmpty) {
-                return SliverFillRemaining(
-                  child: _buildEmptyState(),
-                );
-              }
+                      if (agendaViewModel.actividadesAgenda.isEmpty) {
+                        return SliverFillRemaining(
+                          child: _buildEmptyState(),
+                        );
+                      }
 
-              return _buildActividadesList(agendaViewModel.actividadesAgenda);
-            },
+                      return _buildActividadesList(agendaViewModel.actividadesAgenda);
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSliverAppBar() {
-    return SliverAppBar(
-      expandedHeight: 180.0,
-      floating: false,
-      pinned: true,
-      backgroundColor: const Color(0xFF8B1B1B),
-      elevation: 0,
-      surfaceTintColor: Colors.transparent,
-      shadowColor: Colors.black.withOpacity(0.1),
-      forceElevated: true,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              Color(0xFF8B1B1B),
-              Color(0xFFA52A2A),
-            ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x1A000000),
-              blurRadius: 8,
-              offset: Offset(0, 2),
-            ),
-          ],
+  Widget _buildMainHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(255, 122, 0, 37),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
-        child: FlexibleSpaceBar(
-          title: Row(
+      ),
+      child: Column(
+        children: [
+          // Decoración superior
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.event_note,
-                  color: Colors.white.withOpacity(0.9),
-                  size: 16,
-                ),
+                height: 1,
+                width: 60,
+                color: Colors.white.withOpacity(0.3),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'Mi Agenda',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  letterSpacing: 0.3,
-                  color: Colors.white,
-                ),
+              const Icon(
+                Icons.event_note,
+                size: 16,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 12),
+              Container(
+                height: 1,
+                width: 60,
+                color: Colors.white.withOpacity(0.3),
               ),
             ],
           ),
-          centerTitle: false,
-          titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
-          background: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFB91C1C),
-                  Color(0xFF8B1B1B),
-                ],
-              ),
-            ),
-            child: Stack(
-              children: [
-                // Elementos decorativos simples
-                Positioned(
-                  right: -30,
-                  top: -20,
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.05),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: -20,
-                  bottom: 20,
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.1),
-                        width: 1,
-                      ),
-                    ),
-                  ),
-                ),
-                
-                // Contenido principal simplificado
-                Positioned(
-                  bottom: 60,
-                  left: 24,
-                  right: 80,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.schedule,
-                              color: Colors.white.withOpacity(0.9),
-                              size: 14,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Tus actividades',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.95),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Organizadas y programadas',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.85),
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+          const SizedBox(height: 16),
+          
+          // Título principal
+          const Text(
+            'MI AGENDA',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: 2,
+              height: 1.1,
             ),
           ),
-        ),
+          const SizedBox(height: 16),
+          
+          // Subtítulo
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              '"Tus actividades organizadas"',
+              style: TextStyle(
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+
+
 
   Widget _buildActividadesList(List<Map<String, dynamic>> actividades) {
     return SliverPadding(
@@ -288,21 +213,26 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
         color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: const Color(0xFFF1F5F9),
-          width: 1.5,
+          color: const Color(0xFF8B1B1B).withOpacity(0.13),
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: const Color(0xFF8B1B1B).withOpacity(0.10),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 4,
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 7,
             offset: const Offset(0, 2),
           ),
         ],
@@ -539,26 +469,113 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
   void _confirmarRemover(String actividadId, String nombreActividad) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Quitar de agenda'),
-        content: Text('¿Deseas quitar "$nombreActividad" de tu agenda?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        contentPadding: EdgeInsets.zero,
+        content: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _removerActividad(actividadId);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Quitar'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icono
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF8B1B1B).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.event_busy_rounded,
+                  color: Color(0xFF8B1B1B),
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 20),
+              
+              // Título
+              const Text(
+                'Quitar de agenda',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D2D2D),
+                ),
+              ),
+              const SizedBox(height: 12),
+              
+              // Contenido
+              Text(
+                '¿Deseas quitar "$nombreActividad" de tu agenda?',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey.shade600,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              
+              // Botones
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(color: Colors.grey.shade300),
+                        ),
+                      ),
+                      child: Text(
+                        'Cancelar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _removerActividad(actividadId);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF8B1B1B),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'Quitar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

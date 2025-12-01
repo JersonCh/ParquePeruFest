@@ -1,9 +1,12 @@
 import 'dart:ui';
+import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 import '../../models/evento.dart';
 import '../../models/zona_mapa.dart';
 import '../../services/eventos_service.dart';
@@ -27,6 +30,9 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
   LatLng? _ubicacionActual;
   bool _obteniendoUbicacion = false;
   ZonaMapa? _zonaSeleccionadaParaNavegacion;
+  List<LatLng> _rutaPuntos = [];
+  bool _mostrandoRuta = false;
+  ZonaMapa? _zonaDestinoRuta;
   
   // Coordenadas del Parque Perú-Tacna
   static const LatLng _parquePeruTacna = LatLng(-17.9949, -70.2120);
@@ -70,9 +76,55 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
           _cargando = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error al cargar los eventos'),
-            backgroundColor: Colors.red,
+          SnackBar(
+            content: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.error_outline_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Error de Conexión',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        'No pudimos cargar los eventos. Verifica tu conexión.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFFD32F2F),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 8,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
@@ -98,8 +150,54 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al cargar las zonas del evento: $e'),
-            backgroundColor: Colors.red,
+            content: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Error al Cargar Zonas',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        'Hubo un problema al cargar las zonas del evento',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFFFF8F00),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 8,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
@@ -279,17 +377,19 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
               mapController: _mapController,
               options: MapOptions(
                 initialCenter: _parquePeruTacna,
-                initialZoom: 17.5,
-                minZoom: 15.5,
-                maxZoom: 19.0,
+                initialZoom: 16.0, // Zoom más amplio para mostrar más área
+                minZoom: 14.0, // Permitir zoom más alejado
+                maxZoom: 20.0, // Permitir zoom más cercano
                 backgroundColor: const Color(0xFFF5F5F5), // Fondo claro cuando no hay tiles
                 onMapEvent: (event) {
                   if (event is MapEventMoveEnd) {
                     final center = event.camera.center;
-                    // Mantener el mapa cerca del área del parque
-                    if ((center.latitude - _parquePeruTacna.latitude).abs() > 0.003 ||
-                        (center.longitude - _parquePeruTacna.longitude).abs() > 0.003) {
-                      _centrarMapa();
+                    // Límites más amplios para mayor libertad de movimiento
+                    if ((center.latitude - _parquePeruTacna.latitude).abs() > 0.01 ||
+                        (center.longitude - _parquePeruTacna.longitude).abs() > 0.01) {
+                      if (!_mostrandoRuta) { // No recentrar si se está mostrando una ruta
+                        _centrarMapa();
+                      }
                     }
                   }
                 },
@@ -312,6 +412,25 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
                             'attribution': '© Mapbox',
                           },
                         ),
+                        
+                        // Capa de la ruta (debe ir antes de los marcadores)
+                        if (_rutaPuntos.isNotEmpty)
+                          PolylineLayer(
+                            polylines: [
+                              // Línea de borde para mejor visibilidad
+                              Polyline(
+                                points: _rutaPuntos,
+                                strokeWidth: 6.0,
+                                color: Colors.white.withOpacity(0.8),
+                              ),
+                              // Línea principal
+                              Polyline(
+                                points: _rutaPuntos,
+                                strokeWidth: 3.0,
+                                color: const Color(0xFF8B1B1B),
+                              ),
+                            ],
+                          ),
                         
                         // Marcadores de las zonas
                         MarkerLayer(
@@ -484,7 +603,7 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
                   color: Colors.grey.withOpacity(0.2),
                 ),
                 _buildMapControlButton(
-                  icon: _obteniendoUbicacion ? Icons.hourglass_empty_rounded : Icons.gps_fixed_rounded,
+                  icon: _obteniendoUbicacion ? Icons.hourglass_empty_rounded : Icons.person_pin_circle_rounded,
                   onPressed: _obteniendoUbicacion ? null : () => _obtenerUbicacionActual(),
                   heroTag: "location",
                   tooltip: 'Mi Ubicación',
@@ -493,6 +612,76 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
             ),
           ),
         ),
+        
+        // Botón elegante para cerrar ruta (cuando hay ruta activa)
+        if (_mostrandoRuta)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 160,
+            right: 16,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFFF4444),
+                    Color(0xFFCC0000),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFF4444).withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: Tooltip(
+                  message: 'Cerrar Ruta',
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(28),
+                    onTap: () {
+                      // Agregar vibración táctil
+                      _limpiarRuta();
+                    },
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    padding: const EdgeInsets.all(16),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Círculo de fondo sutil
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        // Icono principal
+                        const Icon(
+                          Icons.close_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                ),
+              ),
+            ),
+          ),
         
         // Indicador discreto de Mapbox
         Positioned(
@@ -522,7 +711,7 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
 
 
   void _centrarMapa() {
-    _mapController.move(_parquePeruTacna, 17.5);
+    _mapController.move(_parquePeruTacna, 16.0); // Usar el mismo zoom inicial
   }
 
   void _zoomIn() {
@@ -542,6 +731,172 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
         // Forzar rebuild para actualizar marcadores
       });
     }
+  }
+
+  // Función para obtener y mostrar la ruta
+  Future<void> _mostrarRutaHasta(ZonaMapa zona) async {
+    if (_ubicacionActual == null) {
+      await _obtenerUbicacionActual();
+      if (_ubicacionActual == null) {
+        _mostrarDialogoError('Ubicación requerida', 
+          'Se necesita tu ubicación actual para calcular la ruta.');
+        return;
+      }
+    }
+
+    setState(() {
+      _mostrandoRuta = true;
+      _zonaDestinoRuta = zona;
+    });
+
+    try {
+      // Obtener la ruta usando OSRM (gratuito)
+      final ruta = await _obtenerRutaOSRM(_ubicacionActual!, zona.ubicacion);
+      
+      if (ruta.isNotEmpty) {
+        setState(() {
+          _rutaPuntos = ruta;
+        });
+        
+        // Ajustar el mapa para mostrar toda la ruta
+        _ajustarMapaParaRuta();
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.route_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '¡Ruta Encontrada!',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          'Sigue la línea roja para llegar a tu destino',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: const Color(0xFF2D7D32),
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 8,
+              action: SnackBarAction(
+                label: 'Cerrar',
+                textColor: Colors.white,
+                backgroundColor: Colors.white.withOpacity(0.2),
+                onPressed: _limpiarRuta,
+              ),
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _mostrandoRuta = false;
+      });
+      _mostrarDialogoError('Error de ruta', 
+        'No se pudo calcular la ruta. Verifica tu conexión a internet.');
+    }
+  }
+
+  // Obtener ruta usando OSRM API (gratuita)
+  Future<List<LatLng>> _obtenerRutaOSRM(LatLng origen, LatLng destino) async {
+    try {
+      final url = 'http://router.project-osrm.org/route/v1/driving/'
+          '${origen.longitude},${origen.latitude};'
+          '${destino.longitude},${destino.latitude}'
+          '?steps=true&geometries=geojson&overview=full';
+      
+      final response = await http.get(Uri.parse(url));
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        
+        if (data['routes'] != null && data['routes'].isNotEmpty) {
+          final geometry = data['routes'][0]['geometry'];
+          final coordinates = geometry['coordinates'] as List;
+          
+          return coordinates.map<LatLng>((coord) => 
+            LatLng(coord[1].toDouble(), coord[0].toDouble())
+          ).toList();
+        }
+      }
+      
+      // Si falla la API, crear una línea directa
+      return [origen, destino];
+    } catch (e) {
+      // Fallback: línea directa
+      return [origen, destino];
+    }
+  }
+
+  // Ajustar el mapa para mostrar toda la ruta
+  void _ajustarMapaParaRuta() {
+    if (_rutaPuntos.isEmpty || _ubicacionActual == null) return;
+
+    double minLat = _rutaPuntos.first.latitude;
+    double maxLat = _rutaPuntos.first.latitude;
+    double minLng = _rutaPuntos.first.longitude;
+    double maxLng = _rutaPuntos.first.longitude;
+
+    for (final punto in _rutaPuntos) {
+      minLat = math.min(minLat, punto.latitude);
+      maxLat = math.max(maxLat, punto.latitude);
+      minLng = math.min(minLng, punto.longitude);
+      maxLng = math.max(maxLng, punto.longitude);
+    }
+
+    // Añadir padding
+    final latPadding = (maxLat - minLat) * 0.1;
+    final lngPadding = (maxLng - minLng) * 0.1;
+
+    final bounds = LatLngBounds(
+      LatLng(minLat - latPadding, minLng - lngPadding),
+      LatLng(maxLat + latPadding, maxLng + lngPadding),
+    );
+
+    _mapController.fitCamera(CameraFit.bounds(bounds: bounds));
+  }
+
+  // Limpiar la ruta
+  void _limpiarRuta() {
+    setState(() {
+      _rutaPuntos.clear();
+      _mostrandoRuta = false;
+      _zonaDestinoRuta = null;
+    });
   }
 
   // Función para obtener ubicación actual
@@ -594,12 +949,54 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Ubicación encontrada'),
-            backgroundColor: const Color(0xFF8B1B1B),
+            content: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.my_location_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '¡Te Encontramos!',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        'Tu ubicación ha sido localizada exitosamente',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF1976D2),
             behavior: SnackBarBehavior.floating,
             margin: const EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            duration: const Duration(seconds: 2),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 8,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -686,6 +1083,19 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
               ],
             ),
             const SizedBox(height: 24),
+            // Nueva opción para mostrar ruta en el mapa
+            SizedBox(
+              width: double.infinity,
+              child: _buildNavigationOption(
+                'Ver Ruta en Mapa',
+                Icons.route_rounded,
+                () {
+                  Navigator.pop(context);
+                  _mostrarRutaHasta(zona);
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -783,16 +1193,84 @@ class _MapaViewState extends State<MapaView> with TickerProviderStateMixin {
     if (mounted) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Text(titulo),
-          content: Text(mensaje),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Entendido', style: TextStyle(color: Color(0xFF8B1B1B))),
+        barrierDismissible: true,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          elevation: 16,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFFFF3E0),
+                  Color(0xFFFFE0B2),
+                ],
+              ),
             ),
-          ],
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF6B35).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: const Icon(
+                    Icons.info_outline_rounded,
+                    color: Color(0xFFFF6B35),
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  titulo,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1F2937),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  mensaje,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF6B7280),
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF8B1B1B),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Entendido',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }

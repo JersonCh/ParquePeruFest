@@ -52,7 +52,7 @@ class _FAQVisitanteViewState extends State<FAQVisitanteView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: const Color(0xFFF7F7FF),
       body: Consumer<FAQViewModel>(
         builder: (context, faqViewModel, child) {
           return StreamBuilder<List<FAQ>>(
@@ -60,58 +60,82 @@ class _FAQVisitanteViewState extends State<FAQVisitanteView> {
             builder: (context, snapshot) {
               // Manejar estados del stream
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B1B1B)),
-                  ),
+                return Column(
+                  children: [
+                    _buildMainHeader(),
+                    const Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B1B1B)),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               }
 
               if (snapshot.hasError) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Colors.red,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Error al cargar FAQs',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[600],
+                return Column(
+                  children: [
+                    _buildMainHeader(),
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              size: 64,
+                              color: Colors.red,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Error al cargar FAQs',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${snapshot.error}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey[500]),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${snapshot.error}',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey[500]),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 );
               }
 
               final faqsActivas = snapshot.data ?? [];
               
-              return CustomScrollView(
-                slivers: [
-                  _buildSliverAppBar(),
-                  SliverToBoxAdapter(child: _buildBusqueda()),
-                  if (_busquedaController.text.isNotEmpty && _faqsFiltradas.isEmpty && !_buscando)
-                    _buildNoResultados()
-                  else if (_busquedaController.text.isNotEmpty)
-                    _buildFAQsList(_faqsFiltradas)
-                  else if (faqsActivas.isEmpty)
-                    _buildEmptyState()
-                  else
-                    _buildFAQsList(faqsActivas),
-                  _buildSoporteSection(),
+              return Column(
+                children: [
+                  _buildMainHeader(),
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      color: Colors.white,
+                      child: CustomScrollView(
+                        slivers: [
+                          SliverToBoxAdapter(child: _buildBusqueda()),
+                          if (_busquedaController.text.isNotEmpty && _faqsFiltradas.isEmpty && !_buscando)
+                            _buildNoResultados()
+                          else if (_busquedaController.text.isNotEmpty)
+                            _buildFAQsList(_faqsFiltradas)
+                          else if (faqsActivas.isEmpty)
+                            _buildEmptyState()
+                          else
+                            _buildFAQsList(faqsActivas),
+                          _buildSoporteSection(),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               );
             },
@@ -121,72 +145,75 @@ class _FAQVisitanteViewState extends State<FAQVisitanteView> {
     );
   }
 
-  Widget _buildSliverAppBar() {
-    return SliverAppBar(
-      expandedHeight: 200.0,
-      floating: false,
-      pinned: true,
-      backgroundColor: const Color(0xFF8B1B1B),
-      flexibleSpace: FlexibleSpaceBar(
-        title: const Text(
-          'Preguntas Frecuentes',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            shadows: [
-              Shadow(
-                offset: Offset(1.0, 1.0),
-                blurRadius: 3.0,
-                color: Color.fromARGB(127, 0, 0, 0),
+  Widget _buildMainHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(255, 122, 0, 37),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Decoración superior
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 1,
+                width: 60,
+                color: Colors.white.withOpacity(0.3),
+              ),
+              const SizedBox(width: 12),
+              const Icon(
+                Icons.help_center_rounded,
+                size: 16,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 12),
+              Container(
+                height: 1,
+                width: 60,
+                color: Colors.white.withOpacity(0.3),
               ),
             ],
           ),
-        ),
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                const Color(0xFF8B1B1B).withOpacity(0.9),
-                const Color(0xFF8B1B1B),
-              ],
+          const SizedBox(height: 16),
+          
+          // Título principal
+          const Text(
+            'PERÚFEST FAQ',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: 2,
+              height: 1.1,
             ),
           ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -50,
-                top: -50,
-                child: Icon(
-                  Icons.help_center,
-                  size: 200,
-                  color: Colors.white.withOpacity(0.1),
-                ),
+          const SizedBox(height: 16),
+          
+          // Subtítulo
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              '"Encuentra respuestas rápidas"',
+              style: TextStyle(
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
               ),
-              const Positioned(
-                bottom: 60,
-                left: 20,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Encuentra respuestas a',
-                      style: TextStyle(color: Colors.white70, fontSize: 16),
-                    ),
-                    Text(
-                      'tus preguntas',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

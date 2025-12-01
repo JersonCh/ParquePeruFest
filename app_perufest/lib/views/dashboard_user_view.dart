@@ -131,113 +131,113 @@ class _DashboardUserViewState extends State<DashboardUserView> {
   Widget _buildEventosPage() {
     return Consumer<EventosViewModel>(
       builder: (context, eventosViewModel, child) {
-        // Mostrar el encabezado principal siempre dentro de la página de Eventos
-        // y luego el contenido según el estado (loading / empty / lista).
-        if (eventosViewModel.isLoading) {
-          return ListView(
-            padding: const EdgeInsets.only(top: 0, left: 0, right: 0, bottom: 0),
-            children: [
-              _buildMainHeader(),
-              const SizedBox(height: 24),
-              const Center(child: CircularProgressIndicator()),
-            ],
-          );
-        } else if (eventosViewModel.eventos.isEmpty) {
-          return ListView(
-            padding: const EdgeInsets.only(top: 0, left: 0, right: 0, bottom: 0),
-            children: [
-              _buildMainHeader(),
-              _buildEmptyState(),
-            ],
-          );
-        } else {
-          return ListView(
-            padding: const EdgeInsets.only(top: 0, left: 0, right: 0, bottom: 0),
-            children: [
-              _buildMainHeader(),
-              const SizedBox(height: 16),
-              _buildEventosList(eventosViewModel.eventos),
-            ],
-          );
-        }
+        return Column(
+          children: [
+            // Encabezado con fondo de color
+            _buildMainHeader(),
+            // Contenido con fondo blanco que se extiende hasta el final
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                color: Colors.white,
+                child: _buildEventosContent(eventosViewModel),
+              ),
+            ),
+          ],
+        );
       },
     );
+  }
+
+  Widget _buildEventosContent(EventosViewModel eventosViewModel) {
+    if (eventosViewModel.isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else if (eventosViewModel.eventos.isEmpty) {
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: _buildEmptyState(),
+      );
+    } else {
+      return ListView(
+        padding: const EdgeInsets.only(top: 16, left: 0, right: 0, bottom: 16),
+        children: [
+          _buildEventosList(eventosViewModel.eventos),
+        ],
+      );
+    }
   }
 
   Widget _buildMainHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(left: 24, right: 24, top: 32, bottom: 24),
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 32, bottom: 32),
       decoration: const BoxDecoration(
         color: Color.fromARGB(255, 122, 0, 37),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.waving_hand,
-                  color: Colors.white.withOpacity(0.9),
-                  size: 14,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Bienvenido al',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.95),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
+          // Decoración superior
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.celebration,
-                  color: Colors.white.withOpacity(0.9),
-                  size: 16,
-                ),
+                height: 1,
+                width: 60,
+                color: Colors.white.withOpacity(0.3),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'PerúFest 2025',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 24,
-                  letterSpacing: 0.3,
-                  color: Colors.white,
-                ),
+              const Icon(
+                Icons.waving_hand,
+                size: 16,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 12),
+              Container(
+                height: 1,
+                width: 60,
+                color: Colors.white.withOpacity(0.3),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Text(
-            'Descubre eventos únicos',
+          const SizedBox(height: 16),
+          
+          // Título principal
+          const Text(
+            'BIENVENIDOS',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.85),
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
+              fontSize: 32,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: 2,
+              height: 1.1,
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          // Subtítulo
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              '"Descubre eventos únicos"',
+              style: TextStyle(
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -245,109 +245,7 @@ class _DashboardUserViewState extends State<DashboardUserView> {
     );
   }
 
-  Widget _buildSliverAppBar() {
-    return SliverAppBar(
-      expandedHeight: 140.0,
-      floating: false,
-      pinned: true,
-      snap: false,
-      stretch: false,
-      backgroundColor: const Color.fromARGB(255, 122, 0, 37),
-      elevation: 0,
-      surfaceTintColor: Colors.transparent,
-      shadowColor: Colors.black.withOpacity(0.12),
-      forceElevated: true,
-      automaticallyImplyLeading: false,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.waving_hand,
-                  color: Colors.white.withOpacity(0.9),
-                  size: 14,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Bienvenido al',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.95),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Descubre eventos únicos',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.85),
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.celebration,
-                  color: Colors.white.withOpacity(0.9),
-                  size: 16,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'PerúFest 2025',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 24,
-                  letterSpacing: 0.3,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              Color.fromARGB(255, 122, 0, 37),
-              Color.fromARGB(255, 140, 0, 45),
-            ],
-          ),
-          image: DecorationImage(
-            image: AssetImage('assets/images/fondo.jpg'),
-            fit: BoxFit.cover,
-            opacity: 0.08,
-          ),
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildEventoCard(Evento evento, Color color) {
     final now = DateTime.now();
@@ -364,7 +262,6 @@ class _DashboardUserViewState extends State<DashboardUserView> {
     );
 
     String estadoTexto = '';
-    Color estadoColor = const Color(0xFF6B7280);
 
     if (hoy.isAtSameMomentAs(inicioEvento) ||
         (hoy.isAfter(inicioEvento) && hoy.isBefore(finEvento)) ||
@@ -493,7 +390,7 @@ class _DashboardUserViewState extends State<DashboardUserView> {
                             ),
                             child: const Icon(
                               Icons.arrow_forward,
-                              color: Color(0xFF4A4E69),
+                              color: Colors.black,
                               size: 16,
                             ),
                           ),
@@ -678,129 +575,213 @@ class _DashboardUserViewState extends State<DashboardUserView> {
                     // Abrir menú modal con opciones extra
                     showModalBottomSheet(
                       context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
                       shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                       ),
                       builder: (context) => Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF8F7FB),
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.white,
+                              Color(0xFFF8FAFC),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Opción: Comprar Entradas
-                            InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const ComprarEntradasPage(),
-                                  ),
-                                );
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.shopping_cart, color: Color(0xFF1976D2)),
-                                    const SizedBox(width: 18),
-                                    const Text(
-                                      'Comprar Entradas',
-                                      style: TextStyle(fontSize: 16, color: Color(0xFF1976D2), fontWeight: FontWeight.w500),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                            // Handle del modal
+                            Container(
+                              margin: const EdgeInsets.only(top: 12, bottom: 24),
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                            
+                            // Título del menú
+                            Padding(
+                              padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [Color(0xFF8B1538), Color(0xFFB91C3C)],
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const Divider(height: 1),
-                            // Opción: Mis Tickets
-                            InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const MisTicketsPage(),
-                                  ),
-                                );
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.confirmation_number, color: Color(0xFF1976D2)),
-                                    const SizedBox(width: 18),
-                                    const Text(
-                                      'Mis Tickets',
-                                      style: TextStyle(fontSize: 16, color: Color(0xFF1976D2), fontWeight: FontWeight.w500),
+                                    child: const Icon(
+                                      Icons.apps_rounded,
+                                      color: Colors.white,
+                                      size: 20,
                                     ),
-                                  ],
+                                  ),
+                                  const SizedBox(width: 12),
+                                  const Text(
+                                    'Más opciones',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF1E293B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            
+                            // Opciones organizadas verticalmente
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              child: Column(
+                                children: [
+                                  _buildMenuOption(
+                                    'Comprar Entradas',
+                                    'Adquiere tus tickets',
+                                    Icons.shopping_cart_rounded,
+                                    Colors.black87,
+                                    () {
+                                      Navigator.pop(context);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const ComprarEntradasPage(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(height: 12),
+                                  _buildMenuOption(
+                                    'Mis Tickets',
+                                    'Ver mis entradas',
+                                    Icons.confirmation_number_rounded,
+                                    Colors.black87,
+                                    () {
+                                      Navigator.pop(context);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const MisTicketsPage(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(height: 12),
+                                  _buildMenuOption(
+                                    'FAQ',
+                                    'Preguntas frecuentes',
+                                    Icons.help_center_rounded,
+                                    Colors.black87,
+                                    () {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        _selectedIndex = 4;
+                                      });
+                                      _pageController.animateToPage(4, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                                    },
+                                  ),
+                                  const SizedBox(height: 12),
+                                  _buildMenuOption(
+                                    'Perfil',
+                                    'Mi información',
+                                    Icons.person_rounded,
+                                    Colors.black87,
+                                    () {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        _selectedIndex = 5;
+                                      });
+                                      _pageController.animateToPage(5, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            
+                            const SizedBox(height: 32),
+                            
+                            // Opción de cerrar sesión separada
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 24),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF8B1538).withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(0xFF8B1538).withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(12),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    _mostrarMenuCerrarSesion();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF8B1538).withOpacity(0.15),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: const Icon(
+                                            Icons.logout_rounded,
+                                            color: Color(0xFF8B1538),
+                                            size: 20,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        const Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Cerrar Sesión',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color(0xFF8B1538),
+                                                ),
+                                              ),
+                                              Text(
+                                                'Salir de la aplicación',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color(0xFF7C1D2E),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const Icon(
+                                          Icons.arrow_forward_ios_rounded,
+                                          color: Color(0xFF8B1538),
+                                          size: 16,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                            const Divider(height: 1),
-                            InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                                setState(() {
-                                  _selectedIndex = 4;
-                                });
-                                _pageController.animateToPage(4, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.help_center_outlined, color: Color(0xFF64748B)),
-                                    const SizedBox(width: 18),
-                                    const Text('FAQ', style: TextStyle(fontSize: 16, color: Color(0xFF64748B))),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const Divider(height: 1),
-                            InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                                setState(() {
-                                  _selectedIndex = 5;
-                                });
-                                _pageController.animateToPage(5, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.person_outline, color: Color(0xFF64748B)),
-                                    const SizedBox(width: 18),
-                                    const Text('Perfil', style: TextStyle(fontSize: 16, color: Color(0xFF64748B))),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 18),
-                            InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                                _mostrarMenuCerrarSesion();
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.logout, color: Color(0xFF64748B)),
-                                    const SizedBox(width: 18),
-                                    const Text('Salir', style: TextStyle(fontSize: 16, color: Color(0xFF64748B))),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                          ],
+                            
+                            const SizedBox(height: 32),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -952,6 +933,80 @@ class _DashboardUserViewState extends State<DashboardUserView> {
         builder:
             (context) =>
                 EventoOpcionesView(evento: evento, userId: currentUserId),
+      ),
+    );
+  }
+
+  Widget _buildMenuOption(String title, String subtitle, IconData icon, Color color, VoidCallback onTap) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            offset: const Offset(0, 2),
+            blurRadius: 8,
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1E293B),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.grey.shade400,
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

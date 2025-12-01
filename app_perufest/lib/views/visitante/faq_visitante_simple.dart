@@ -136,283 +136,119 @@ class _FAQVisitanteSimpleState extends State<FAQVisitanteSimple> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(child: _buildBusqueda()),
-          if (_isLoading)
-            const SliverFillRemaining(
-              child: Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B1B1B)),
-                ),
+      backgroundColor: const Color(0xFFF7F7FF),
+      body: Column(
+        children: [
+          _buildMainHeader(),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              color: Colors.white,
+              child: CustomScrollView(
+                slivers: [
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 20),
+                  ),
+                  if (_isLoading)
+                    const SliverFillRemaining(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B1B1B)),
+                        ),
+                      ),
+                    )
+                  else if (_error != null)
+                    SliverFillRemaining(child: _buildErrorState())
+                  else if (_faqsFiltradas.isEmpty && _busquedaController.text.isNotEmpty)
+                    _buildNoResultados()
+                  else if (_faqsFiltradas.isEmpty)
+                    _buildEmptyState()
+                  else
+                    _buildFAQsList(_faqsFiltradas),
+                  _buildSoporteSection(),
+                ],
               ),
-            )
-          else if (_error != null)
-            SliverFillRemaining(child: _buildErrorState())
-          else if (_faqsFiltradas.isEmpty && _busquedaController.text.isNotEmpty)
-            _buildNoResultados()
-          else if (_faqsFiltradas.isEmpty)
-            _buildEmptyState()
-          else
-            _buildFAQsList(_faqsFiltradas),
-          _buildSoporteSection(),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSliverAppBar() {
-    return SliverAppBar(
-      expandedHeight: 180.0,
-      floating: false,
-      pinned: true,
-      backgroundColor: const Color(0xFF8B1B1B),
-      elevation: 0,
-      surfaceTintColor: Colors.transparent,
-      shadowColor: Colors.black.withOpacity(0.1),
-      forceElevated: true,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              Color(0xFF8B1B1B),
-              Color(0xFFA52A2A),
-            ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x1A000000),
-              blurRadius: 8,
-              offset: Offset(0, 2),
-            ),
-          ],
+  Widget _buildMainHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(255, 122, 0, 37),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
-        child: FlexibleSpaceBar(
-          title: Row(
+      ),
+      child: Column(
+        children: [
+          // Decoración superior
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.help_center,
-                  color: Colors.white.withOpacity(0.9),
-                  size: 16,
-                ),
+                height: 1,
+                width: 60,
+                color: Colors.white.withOpacity(0.3),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'Preguntas Frecuentes',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  letterSpacing: 0.3,
-                  color: Colors.white,
-                ),
+              const Icon(
+                Icons.help_center_rounded,
+                size: 16,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 12),
+              Container(
+                height: 1,
+                width: 60,
+                color: Colors.white.withOpacity(0.3),
               ),
             ],
           ),
-          centerTitle: false,
-          titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
-          background: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFB91C1C),
-                  Color(0xFF8B1B1B),
-                ],
-              ),
-            ),
-            child: Stack(
-              children: [
-                // Elementos decorativos simples
-                Positioned(
-                  right: -30,
-                  top: -20,
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.05),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: -20,
-                  bottom: 20,
-                  child: Icon(
-                    Icons.quiz_rounded,
-                    size: 24,
-                    color: Colors.white.withOpacity(0.1),
-                  ),
-                ),
-                // Badge redondeado superior
-                Positioned(
-                  top: 50,
-                  left: 16,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.25),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.help_center,
-                            color: Colors.white,
-                            size: 12,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Centro de ayuda',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0.2,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Texto descriptivo superior
-                const Positioned(
-                  top: 95,
-                  left: 16,
-                  right: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Resuelve tus dudas',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        'sobre PeruFest 2025',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+          const SizedBox(height: 16),
+          
+          // Título principal
+          const Text(
+            'PERÚFEST FAQ',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: 2,
+              height: 1.1,
             ),
           ),
-        ),
+          const SizedBox(height: 16),
+          
+          // Subtítulo
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              '"Encuentra respuestas rápidas"',
+              style: TextStyle(
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildBusqueda() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              offset: const Offset(0, 2),
-              blurRadius: 8,
-            ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              offset: const Offset(0, 1),
-              blurRadius: 3,
-            ),
-          ],
-        ),
-        child: TextField(
-          controller: _busquedaController,
-          decoration: InputDecoration(
-            hintText: 'Buscar en preguntas frecuentes...',
-            hintStyle: TextStyle(
-              color: Colors.grey[500],
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-            ),
-            prefixIcon: Icon(
-              Icons.search_rounded,
-              color: const Color(0xFF8B1B1B).withOpacity(0.7),
-              size: 22,
-            ),
-            suffixIcon: _busquedaController.text.isNotEmpty
-                ? IconButton(
-                    icon: Icon(
-                      Icons.clear_rounded,
-                      color: Colors.grey[400],
-                      size: 20,
-                    ),
-                    onPressed: () {
-                      _busquedaController.clear();
-                      _buscarFAQs('');
-                    },
-                  )
-                : IconButton(
-                    icon: Icon(
-                      Icons.refresh_rounded,
-                      color: Colors.grey[400],
-                      size: 20,
-                    ),
-                    onPressed: _cargarFAQs,
-                  ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(
-                color: Color(0xFF8B1B1B),
-                width: 1.5,
-              ),
-            ),
-            fillColor: Colors.white,
-            filled: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          ),
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
-          ),
-          onChanged: _buscarFAQs,
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildErrorState() {
     return Center(
@@ -635,102 +471,189 @@ class _FAQVisitanteSimpleState extends State<FAQVisitanteSimple> {
   Widget _buildSoporteSection() {
     return SliverToBoxAdapter(
       child: Container(
-        margin: const EdgeInsets.fromLTRB(24, 40, 24, 32),
-        padding: const EdgeInsets.all(24),
+        margin: const EdgeInsets.fromLTRB(32, 16, 32, 16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF8B1B1B),
-              Color(0xFFB91C1C),
-            ],
+          color: const Color(0xFFE5E5E5),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFD4D4D4),
+            width: 1,
           ),
-          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF8B1B1B).withOpacity(0.3),
-              offset: const Offset(0, 8),
-              blurRadius: 24,
+              color: const Color(0xFF64748B).withOpacity(0.15),
+              offset: const Offset(0, 4),
+              blurRadius: 12,
+              spreadRadius: -1,
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              offset: const Offset(0, 2),
-              blurRadius: 8,
+              color: const Color(0xFF94A3B8).withOpacity(0.1),
+              offset: const Offset(0, 1),
+              blurRadius: 6,
             ),
           ],
         ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.support_agent_rounded,
-                color: Colors.white,
-                size: 32,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              '¿Necesitas más ayuda?',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Nuestro equipo está listo para resolver todas tus dudas sobre PeruFest 2025.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 15,
-                height: 1.5,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            const SizedBox(height: 28),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    offset: const Offset(0, 2),
-                    blurRadius: 8,
-                  ),
-                ],
-              ),
-              child: ElevatedButton.icon(
-                onPressed: _contactarWhatsApp,
-                icon: const Icon(Icons.chat_rounded, size: 20),
-                label: const Text(
-                  'Contactar por WhatsApp',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.3,
-                    fontSize: 16,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF25D366),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              // Elementos decorativos de fondo
+              Positioned(
+                top: -20,
+                right: -20,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.05),
                   ),
                 ),
               ),
-            ),
-          ],
+              Positioned(
+                bottom: -30,
+                left: -30,
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.03),
+                  ),
+                ),
+              ),
+              
+              // Contenido principal
+              Padding(
+                padding: const EdgeInsets.all(4),
+                child: Column(
+                  children: [
+                    // Icono elegante más pequeño
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF8B1538),
+                            Color(0xFFB91C3C),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF8B1538).withOpacity(0.3),
+                            blurRadius: 8,
+                            spreadRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.headset_mic_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // Título principal
+                    const Text(
+                      '¿Necesitas ayuda?',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    
+                    // Descripción simplificada
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: const Text(
+                        'Contacta a nuestro equipo especializado para resolver tus dudas.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                          height: 1.3,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    
+                    // Botón de WhatsApp elegante y compacto
+                    Container(
+                      width: double.infinity,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF22C55E),
+                            Color(0xFF16A34A),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF22C55E).withOpacity(0.25),
+                            offset: const Offset(0, 2),
+                            blurRadius: 8,
+                            spreadRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _contactarWhatsApp,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.chat_rounded,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Contactar WhatsApp',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                const Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
