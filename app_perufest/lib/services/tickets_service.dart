@@ -64,6 +64,22 @@ class TicketsService {
     }
   }
 
+  /// Obtener todos los tickets (para encargado)
+  Future<List<Ticket>> obtenerTodosLosTickets() async {
+    try {
+      final querySnapshot = await _firestore
+          .collection(_ticketsCollection)
+          .orderBy('fechaCompra', descending: true)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => Ticket.fromMap(doc.data()))
+          .toList();
+    } catch (e) {
+      throw Exception('Error al obtener todos los tickets: $e');
+    }
+  }
+
   /// Validar un ticket por QR
   Future<bool> validarTicket(String qrData, String validadorId) async {
     try {
@@ -230,6 +246,17 @@ class TicketsService {
       await batch.commit();
     } catch (e) {
       throw Exception('Error al cancelar orden: $e');
+    }
+  }
+
+  /// Crear un ticket individual (sin orden)
+  Future<Ticket> crearTicket(Ticket ticket) async {
+    try {
+      final ticketRef = _firestore.collection(_ticketsCollection).doc(ticket.id);
+      await ticketRef.set(ticket.toMap());
+      return ticket;
+    } catch (e) {
+      throw Exception('Error al crear ticket: $e');
     }
   }
 }

@@ -5,6 +5,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../viewmodels/tickets_viewmodel.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../models/ticket.dart';
+import '../../services/ticket_storage_service.dart';
+import 'package:open_file/open_file.dart';
 import 'ver_ticket_page.dart';
 
 class MisTicketsPage extends StatefulWidget {
@@ -23,7 +25,10 @@ class _MisTicketsPageState extends State<MisTicketsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authViewModel = context.read<AuthViewModel>();
       if (authViewModel.currentUser != null) {
+        debugPrint('🎫 Cargando tickets para usuario: ${authViewModel.currentUser!.id}');
         context.read<TicketsViewModel>().cargarMisTickets(authViewModel.currentUser!.id);
+      } else {
+        debugPrint('❌ No hay usuario logueado');
       }
     });
   }
@@ -242,25 +247,47 @@ class _MisTicketsPageState extends State<MisTicketsPage> {
               
               const SizedBox(height: 12),
               
-              // Botón de acción
-              if (ticket.estaActivo)
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => _mostrarQR(ticket),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ticket.colorTema,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+              // Botones de acción
+              Row(
+                children: [
+                  // Botón Ver PDF
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _verPDF(ticket),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: ticket.colorTema,
+                        side: BorderSide(color: ticket.colorTema),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                    icon: const Icon(Icons.qr_code, color: Colors.white),
-                    label: const Text(
-                      'Mostrar QR',
-                      style: TextStyle(color: Colors.white),
+                      icon: const Icon(Icons.picture_as_pdf, size: 20),
+                      label: const Text('Ver PDF'),
                     ),
                   ),
-                ),
+                  
+                  const SizedBox(width: 8),
+                  
+                  // Botón Mostrar QR
+                  if (ticket.estaActivo)
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => _mostrarQR(ticket),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ticket.colorTema,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        icon: const Icon(Icons.qr_code, color: Colors.white, size: 20),
+                        label: const Text(
+                          'QR',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ],
           ),
         ),
@@ -485,5 +512,99 @@ class _MisTicketsPageState extends State<MisTicketsPage> {
     // Aquí se podría navegar a una vista de detalle completa
     // o mostrar el PDF del comprobante
     _mostrarQR(ticket);
+  }
+
+  Future<void> _verPDF(Ticket ticket) async {
+    try {
+      // Verificar si existe el PDF guardado
+      final pdfPath = await TicketStorageService.getTicketPdfPath(ticket.id);
+      
+      if (pdfPath != null) {
+        // Abrir el PDF con el visor predeterminado
+        final result = await OpenFile.open(pdfPath);
+        
+        if (result.type != ResultType.done && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No se pudo abrir el PDF'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('PDF no encontrado. ¿Deseas regenerarlo?'),
+              backgroundColor: Colors.orange,
+              action: SnackBarAction(
+                label: 'Regenerar',
+                textColor: Colors.white,
+                onPressed: () => _regenerarPDF(ticket),
+              ),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al abrir PDF: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _regenerarPDF(Ticket ticket) async {
+    // Mostrar diálogo de carga
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Regenerando comprobante...'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    try {
+      // Aquí se podría implementar la regeneración del PDF
+      // Por ahora solo mostramos un mensaje
+      await Future.delayed(const Duration(seconds: 2));
+      
+      if (mounted) {
+        Navigator.pop(context); // Cerrar diálogo de carga
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Función de regeneración no implementada aún'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Cerrar diálogo de carga
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

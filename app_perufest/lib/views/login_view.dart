@@ -6,6 +6,7 @@ import 'registro_view.dart';
 import 'dashboard_user_view.dart';
 import 'dashboard_admin_view.dart';
 import 'dashboard_expositor_view.dart';
+import 'dashboard_encargado_view.dart';
 import 'recuperar_paso1.dart';
 
 class LoginView extends StatefulWidget {
@@ -44,6 +45,8 @@ class _LoginViewState extends State<LoginView> {
           destino = const DashboardAdminView();
         } else if (rol == 'expositor') {
           destino = const DashboardExpositorView();
+        } else if (rol == 'encargado') {
+          destino = const DashboardEncargadoView();
         } else if (rol == 'usuario') {
           destino = const DashboardUserView();
         } else {

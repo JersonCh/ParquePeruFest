@@ -90,6 +90,25 @@ class TicketsViewModel extends ChangeNotifier {
     }
   }
 
+  /// Cargar todos los tickets (para encargado)
+  Future<void> cargarTodosLosTickets() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _tickets = await _ticketsService.obtenerTodosLosTickets();
+    } catch (e) {
+      _error = 'Error al cargar todos los tickets: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Getter para obtener todos los tickets
+  List<Ticket> get allTickets => _tickets;
+
   /// Calcular todas las estadísticas
   void _calcularEstadisticas() {
     // Resetear contadores

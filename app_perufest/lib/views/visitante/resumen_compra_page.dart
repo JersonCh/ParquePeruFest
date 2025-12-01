@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/ticket.dart';
-import '../../viewmodels/tickets_viewmodel.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../services/culqi_service.dart';
 import '../../services/pdf_service.dart';
 import '../../services/ticket_storage_service.dart';
 import '../../services/email_service.dart';
+import '../../services/tickets_service.dart';
 import 'package:open_file/open_file.dart';
 
 class ResumenCompraPage extends StatefulWidget {
@@ -539,9 +539,9 @@ class _ResumenCompraPageState extends State<ResumenCompraPage> {
       
       try {
         final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+        final ticketsService = TicketsService();
         
         // Simular creación de ticket
-        // En producción, esto se haría a través del TicketsService
         final ticketId = 'ticket_${DateTime.now().millisecondsSinceEpoch}';
         
         // Crear un ticket temporal para generar el PDF
@@ -566,7 +566,10 @@ class _ResumenCompraPageState extends State<ResumenCompraPage> {
           usosRestantes: widget.tipoTicket == TipoTicket.grupal ? widget.cantidadPersonas : 1,
         );
         
-        // Generar el PDF del comprobante
+        // 1. GUARDAR EL TICKET EN FIRESTORE
+        await ticketsService.crearTicket(ticketTemporal);
+        
+        // 2. Generar el PDF del comprobante
         final pdfBytes = await PdfService.generarComprobante(
           ticket: ticketTemporal,
           nombreTitular: widget.nombreComprador,
@@ -591,12 +594,17 @@ class _ResumenCompraPageState extends State<ResumenCompraPage> {
         
         // Enviar PDF por email (simulado)
         final emailService = EmailService();
-        await emailService.enviarTicketPorEmail(
-          destinatario: widget.emailComprador,
-          nombreDestinatario: widget.nombreComprador,
-          ticketId: ticketId,
-          pdfPath: pdfPath,
-        );
+        try {
+          await emailService.enviarTicketPorEmail(
+            destinatario: widget.emailComprador,
+            nombreDestinatario: widget.nombreComprador,
+            ticketId: ticketId,
+            pdfPath: pdfPath,
+          );
+        } catch (e) {
+          // El error de email no debe detener el proceso
+          debugPrint('⚠️ No se pudo enviar el email: $e');
+        }
         
         // Mostrar diálogo de éxito con opción de ver PDF
         if (mounted) {
@@ -608,6 +616,7 @@ class _ResumenCompraPageState extends State<ResumenCompraPage> {
             SnackBar(
               content: Text('Error al procesar el pago: $e'),
               backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
             ),
           );
         }
