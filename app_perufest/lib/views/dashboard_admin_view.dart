@@ -201,17 +201,18 @@ class _DashboardAdminViewState extends State<DashboardAdminView> {
               index: 6,
             ),
             const Divider(),
-            _buildDrawerItem(
-              icon: Icons.confirmation_number,
-              title: 'Ventas de Tickets',
-              index: 8,
-            ),
-            _buildDrawerItem(
-              icon: Icons.qr_code_scanner,
-              title: 'Validar Tickets',
-              index: 9,
-            ),
-            const Divider(),
+            // Opciones de tickets ocultas temporalmente
+            // _buildDrawerItem(
+            //   icon: Icons.confirmation_number,
+            //   title: 'Ventas de Tickets',
+            //   index: 8,
+            // ),
+            // _buildDrawerItem(
+            //   icon: Icons.qr_code_scanner,
+            //   title: 'Validar Tickets',
+            //   index: 9,
+            // ),
+            // const Divider(),
             _buildDrawerItem(
               icon: Icons.bar_chart,
               title: 'Estadísticas',
