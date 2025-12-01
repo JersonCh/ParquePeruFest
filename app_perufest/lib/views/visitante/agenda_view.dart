@@ -210,166 +210,280 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
     }
   }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFF8B1B1B).withOpacity(0.13),
-          width: 1.2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF8B1B1B).withOpacity(0.10),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 7,
-            offset: const Offset(0, 2),
-          ),
-        ],
+  return Container(
+    margin: const EdgeInsets.only(bottom: 16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+        color: Colors.grey.withOpacity(0.2),
+        width: 1,
       ),
-      child: Column(
-        children: [
-          // Header con tiempo restante
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: tiempoColor.withOpacity(0.1),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.15),
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+          spreadRadius: 1,
+        ),
+        BoxShadow(
+          color: Colors.black.withOpacity(0.05),
+          blurRadius: 6,
+          offset: const Offset(0, 1),
+        ),
+      ],
+    ),
+    child: Column(
+      children: [
+        // Header compacto con estado
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: tiempoColor == Colors.grey 
+                  ? [Colors.grey.shade50, Colors.grey.shade100]
+                  : [tiempoColor.withOpacity(0.05), tiempoColor.withOpacity(0.12)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(15),
+              topRight: Radius.circular(15),
+            ),
+            border: Border(
+              bottom: BorderSide(
+                color: tiempoColor.withOpacity(0.15),
+                width: 1,
               ),
             ),
-            child: Row(
-              children: [
-                Icon(tiempoIcon, color: tiempoColor, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  tiempoTexto,
-                  style: TextStyle(
-                    color: tiempoColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                  onPressed: () => _confirmarRemover(actividadId, nombre),
-                  tooltip: 'Quitar de agenda',
-                ),
-              ],
-            ),
           ),
-          
-          // Contenido principal
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Título de la actividad
-                Text(
-                  nombre,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D2D2D),
-                  ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: tiempoColor,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: tiempoColor.withOpacity(0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                
-                // Información de zona
-                Row(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.location_on, 
-                         color: const Color(0xFF8B1B1B).withOpacity(0.7), 
-                         size: 18),
-                    const SizedBox(width: 8),
+                    Icon(
+                      tiempoIcon, 
+                      color: Colors.white, 
+                      size: 14
+                    ),
+                    const SizedBox(width: 6),
                     Text(
-                      zona,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.w500,
+                      tiempoTexto,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                
-                // Fecha y hora
-                if (fechaInicio != null) ...[
-                  Row(
-                    children: [
-                      Icon(Icons.access_time, 
-                           color: const Color(0xFF8B1B1B).withOpacity(0.7), 
-                           size: 18),
-                      const SizedBox(width: 8),
-                      Text(
-                        _formatearFechaHora(fechaInicio),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.red.withOpacity(0.3),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withOpacity(0.2),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: InkWell(
+                  onTap: () => _confirmarRemover(actividadId, nombre),
+                  borderRadius: BorderRadius.circular(12),
+                  child: const Icon(
+                    Icons.close,
+                    color: Colors.red,
+                    size: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        
+        // Contenido principal compacto
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(15),
+              bottomRight: Radius.circular(15),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Título de la actividad
+              Text(
+                nombre,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D2D2D),
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              
+              const SizedBox(height: 8),
+              
+              // Información principal en una sola fila
+              Row(
+                children: [
+                  // Zona
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          color: const Color(0xFF8B1B1B),
+                          size: 16,
                         ),
-                      ),
-                      if (fechaFin != null) ...[
-                        Text(
-                          ' - ${_formatearHora(fechaFin)}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            zona,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade700,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
-                    ],
+                    ),
+                  ),
+                  
+                  // Hora
+                  if (fechaInicio != null) 
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.schedule_outlined,
+                          color: Colors.grey.shade600,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          _formatearHora(fechaInicio),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        if (fechaFin != null) ...[
+                          Text(
+                            ' - ${_formatearHora(fechaFin)}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                ],
+              ),
+              
+              const SizedBox(height: 8),
+              
+              // Fecha en línea separada
+              if (fechaInicio != null) 
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      color: Colors.grey.shade500,
+                      size: 14,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      _formatearFecha(fechaInicio),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ],
+                ),
+              
+              const SizedBox(height: 12),
+              
+              // Recordatorio compacto
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF8B1B1B),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF8B1B1B).withOpacity(0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.notifications_outlined,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Recordatorio: ${actividad['recordatorioMinutos']} min antes',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
-                
-                const SizedBox(height: 16),
-                
-                // Recordatorio
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue.shade200),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.notifications, 
-                           color: Colors.blue.shade600, 
-                           size: 16),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Recordatorio: ${actividad['recordatorioMinutos']} min antes',
-                        style: TextStyle(
-                          color: Colors.blue.shade700,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildEmptyState() {
     return Center(
@@ -608,5 +722,17 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
 
   String _formatearHora(DateTime fecha) {
     return '${fecha.hour.toString().padLeft(2, '0')}:${fecha.minute.toString().padLeft(2, '0')}';
+  }
+  
+  String _formatearFecha(DateTime fecha) {
+    final dias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    final meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 
+                  'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    
+    final diaSemana = dias[fecha.weekday % 7];
+    final dia = fecha.day;
+    final mes = meses[fecha.month - 1];
+    
+    return '$diaSemana $dia $mes';
   }
 }
