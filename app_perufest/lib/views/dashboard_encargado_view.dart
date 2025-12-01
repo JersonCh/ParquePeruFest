@@ -461,110 +461,115 @@ class _DashboardEncargadoViewState extends State<DashboardEncargadoView> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (context, scrollController) => SingleChildScrollView(
-          controller: scrollController,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                
-                // Título
-                Row(
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.75,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            
+            // Contenido scrolleable
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      ticket.icono,
-                      size: 32,
-                      color: const Color(0xFF1976D2),
+                    // Título
+                    Row(
+                      children: [
+                        Icon(
+                          ticket.icono,
+                          size: 32,
+                          color: const Color(0xFF1976D2),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Detalles del Ticket',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                ticket.titulo,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Detalles del Ticket',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            ticket.titulo,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
+                    
+                    const Divider(height: 32),
+                    
+                    // Información
+                    _buildDetalle('ID', ticket.idFormateado),
+                    _buildDetalle('Orden', ticket.ordenId ?? 'N/A'),
+                    _buildDetalle('Estado', ticket.estado.toString().split('.').last.toUpperCase()),
+                    _buildDetalle('Monto', 'S/ ${ticket.monto.toStringAsFixed(2)}'),
+                    _buildDetalle('Personas', ticket.cantidadPersonas.toString()),
+                    _buildDetalle('Fecha de Compra', formatter.format(ticket.fechaCompra)),
+                    _buildDetalle('Fecha de Validez', formatter.format(ticket.fechaValidez)),
+                    _buildDetalle('Comprador', ticket.nombreComprador),
+                    _buildDetalle('DNI', ticket.dniComprador),
+                    if (ticket.placaVehiculo != null)
+                      _buildDetalle('Placa Vehículo', ticket.placaVehiculo!),
+                    
+                    if (ticket.estado == EstadoTicket.usado) ...[
+                      const Divider(height: 32),
+                      const Text(
+                        'Información de Validación',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      if (ticket.fechaValidacion != null)
+                        _buildDetalle('Validado el', formatter.format(ticket.fechaValidacion!)),
+                      if (ticket.validadoPor != null)
+                        _buildDetalle('Validado por', ticket.validadoPor!),
+                    ],
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Botón cerrar
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cerrar'),
                       ),
                     ),
+                    
+                    // Espacio adicional para evitar que el teclado tape
+                    SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
                   ],
                 ),
-                
-                const Divider(height: 32),
-                
-                // Información
-                _buildDetalle('ID', ticket.idFormateado),
-                _buildDetalle('Orden', ticket.ordenId ?? 'N/A'),
-                _buildDetalle('Estado', ticket.estado.toString().split('.').last.toUpperCase()),
-                _buildDetalle('Monto', 'S/ ${ticket.monto.toStringAsFixed(2)}'),
-                _buildDetalle('Personas', ticket.cantidadPersonas.toString()),
-                _buildDetalle('Fecha de Compra', formatter.format(ticket.fechaCompra)),
-                _buildDetalle('Fecha de Validez', formatter.format(ticket.fechaValidez)),
-                _buildDetalle('Comprador', ticket.nombreComprador),
-                _buildDetalle('DNI', ticket.dniComprador),
-                if (ticket.placaVehiculo != null)
-                  _buildDetalle('Placa Vehículo', ticket.placaVehiculo!),
-                
-                if (ticket.estado == EstadoTicket.usado) ...[
-                  const Divider(height: 32),
-                  const Text(
-                    'Información de Validación',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  if (ticket.fechaValidacion != null)
-                    _buildDetalle('Validado el', formatter.format(ticket.fechaValidacion!)),
-                  if (ticket.validadoPor != null)
-                    _buildDetalle('Validado por', ticket.validadoPor!),
-                ],
-                
-                const SizedBox(height: 24),
-                
-                // Botón cerrar
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cerrar'),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

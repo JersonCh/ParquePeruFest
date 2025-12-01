@@ -550,7 +550,7 @@ class PdfService {
           ),
           child: pw.Center(
             child: pw.Text(
-              'PERUFEST',
+              'PARQUE PERU FEST',
               style: pw.TextStyle(
                 fontSize: 22,
                 fontWeight: pw.FontWeight.bold,

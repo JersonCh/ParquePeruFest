@@ -165,51 +165,53 @@ class _ValidarTicketsPageState extends State<ValidarTicketsPage> {
   }
 
   Widget _buildMensajeError() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.red.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red, width: 2),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.cancel,
-            size: 80,
-            color: Colors.red,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Ticket NO Válido',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+    return SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.red.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.red, width: 2),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.cancel,
+              size: 60,
               color: Colors.red,
             ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            _mensajeError!,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
+            const SizedBox(height: 16),
+            const Text(
+              'Ticket NO Válido',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: _reiniciarScanner,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+            const SizedBox(height: 12),
+            Text(
+              _mensajeError!,
+              style: const TextStyle(
+                fontSize: 15,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
             ),
-            child: const Text(
-              'Escanear otro',
-              style: TextStyle(color: Colors.white),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _reiniciarScanner,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: const Text(
+                'Escanear otro',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -365,16 +367,11 @@ class _ValidarTicketsPageState extends State<ValidarTicketsPage> {
     });
 
     try {
-      // Validar formato del QR
-      if (!_qrService.validarQRData(qrData)) {
-        throw Exception('Código QR inválido o manipulado');
-      }
-
       // Obtener el validador ID
       final authViewModel = context.read<AuthViewModel>();
       final validadorId = authViewModel.currentUser?.id ?? 'admin';
 
-      // Validar el ticket
+      // Validar el ticket directamente
       final ticketsViewModel = context.read<TicketsViewModel>();
       final ticket = await ticketsViewModel.validarTicketPorQR(qrData, validadorId);
 

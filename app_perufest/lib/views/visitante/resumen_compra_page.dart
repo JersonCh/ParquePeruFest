@@ -562,7 +562,11 @@ class _ResumenCompraPageState extends State<ResumenCompraPage> {
           placaVehiculo: widget.placaVehiculo,
           tipoVehiculo: widget.tipoVehiculo,
           estado: EstadoTicket.pagado,
-          qrData: 'QR-$ticketId',
+          qrData: widget.tipoEntrada == TipoEntrada.entrada 
+              ? 'ENTRADA-$ticketId'
+              : widget.tipoEntrada == TipoEntrada.cochera
+                  ? 'COCHERA-$ticketId'
+                  : 'COMBO-$ticketId',
           usosRestantes: widget.tipoTicket == TipoTicket.grupal ? widget.cantidadPersonas : 1,
         );
         
