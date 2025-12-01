@@ -51,59 +51,135 @@ class _StandsEventoViewState extends State<StandsEventoView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Stands - ${widget.evento.nombre}',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: const Color(0xFF8B1B1B),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF8B1B1B), Color(0xFFA52A2A)],
+      body: Column(
+        children: [
+          // Header personalizado igual al diseño de PERÚFEST DAILY
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 40, bottom: 20, left: 16, right: 16),
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 122, 0, 37),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              children: [
+                // Fila de iconos
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                // Título principal
+                Text(
+                  'STANDS ${widget.evento.nombre.toUpperCase()}',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 2.0,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                // Fecha
+                Text(
+                  '1 DE DICIEMBRE DE 2025',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white.withOpacity(0.9),
+                    letterSpacing: 1.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 15),
+                // Ícono centrado con líneas decorativas
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 1,
+                      width: 40,
+                      color: Colors.white.withOpacity(0.7),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.store,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      height: 1,
+                      width: 40,
+                      color: Colors.white.withOpacity(0.7),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                // Subtítulo con fondo redondeado
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: const Text(
+                    '"Todos los stands del evento"',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-      ),
-      body: Consumer<StandsViewModel>(
-        builder: (context, standsViewModel, child) {
-          if (standsViewModel.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B1B1B)),
-              ),
-            );
-          }
+          // Contenido del body
+          Expanded(
+            child: Consumer<StandsViewModel>(
+              builder: (context, standsViewModel, child) {
+                if (standsViewModel.isLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B1B1B)),
+                    ),
+                  );
+                }
 
-          if (standsViewModel.error.isNotEmpty) {
-            return _buildErrorState(standsViewModel.error);
-          }
+                if (standsViewModel.error.isNotEmpty) {
+                  return _buildErrorState(standsViewModel.error);
+                }
 
-          final zonasDisponibles = standsViewModel.getZonasUnicas();
+                final zonasDisponibles = standsViewModel.getZonasUnicas();
 
-          if (standsViewModel.stands.isEmpty) {
-            return _buildEmptyState();
-          }
+                if (standsViewModel.stands.isEmpty) {
+                  return _buildEmptyState();
+                }
 
-          return Column(
-            children: [
-              _buildFiltroZonas(zonasDisponibles),
-              Expanded(
-                child:
-                    _standsFiltrados.isEmpty
-                        ? _buildNoResultsState()
-                        : _buildStandsList(),
-              ),
-            ],
-          );
-        },
+                return Column(
+                  children: [
+                    _buildFiltroZonas(zonasDisponibles),
+                    Expanded(
+                      child: _standsFiltrados.isEmpty
+                          ? _buildNoResultsState()
+                          : _buildStandsList(),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -112,14 +188,14 @@ class _StandsEventoViewState extends State<StandsEventoView> {
     final todasLasZonas = ['Todas', ...zonasDisponibles];
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.05),
             spreadRadius: 1,
-            blurRadius: 5,
+            blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
@@ -129,21 +205,32 @@ class _StandsEventoViewState extends State<StandsEventoView> {
         children: [
           Row(
             children: [
-              Icon(Icons.filter_list, size: 20, color: const Color(0xFF8B1B1B)),
-              const SizedBox(width: 8),
-              Text(
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF8B1B1B).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.tune_rounded,
+                  size: 20,
+                  color: Color(0xFF8B1B1B),
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
                 'Filtrar por zona:',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF8B1B1B),
+                  color: Color(0xFF8B1B1B),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           SizedBox(
-            height: 40,
+            height: 45,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: todasLasZonas.length,
@@ -152,35 +239,55 @@ class _StandsEventoViewState extends State<StandsEventoView> {
                 final isSelected = _zonaSeleccionada == zona;
 
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(
-                      zona,
-                      style: TextStyle(
-                        color:
-                            isSelected ? Colors.white : const Color(0xFF8B1B1B),
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
+                  padding: const EdgeInsets.only(right: 12),
+                  child: GestureDetector(
+                    onTap: () {
                       setState(() {
                         _zonaSeleccionada = zona;
                       });
                       _aplicarFiltro();
                     },
-                    backgroundColor: Colors.white,
-                    selectedColor: const Color(0xFF8B1B1B),
-                    side: BorderSide(
-                      color:
-                          isSelected
-                              ? const Color(0xFF8B1B1B)
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: isSelected
+                            ? const LinearGradient(
+                                colors: [Color(0xFF8B1B1B), Color(0xFF6B1515)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              )
+                            : null,
+                        color: isSelected ? null : Colors.white,
+                        borderRadius: BorderRadius.circular(25),
+                        border: Border.all(
+                          color: isSelected 
+                              ? Colors.transparent 
                               : Colors.grey.shade300,
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isSelected
+                                ? const Color(0xFF8B1B1B).withOpacity(0.3)
+                                : Colors.black.withOpacity(0.05),
+                            blurRadius: isSelected ? 8 : 4,
+                            offset: Offset(0, isSelected ? 4 : 2),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        zona,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.grey.shade700,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
-                    checkmarkColor: Colors.white,
-                    elevation: isSelected ? 3 : 1,
-                    pressElevation: 5,
                   ),
                 );
               },
@@ -208,150 +315,95 @@ class _StandsEventoViewState extends State<StandsEventoView> {
 
   Widget _buildStandCard(Stand stand) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.grey.withOpacity(0.25),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.08),
+            spreadRadius: 2,
+            blurRadius: 15,
+            offset: const Offset(0, 6),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            spreadRadius: 0,
+            blurRadius: 25,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header con imagen y nombre
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(16),
-              ),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF8B1B1B),
-                  const Color(0xFF8B1B1B).withOpacity(0.8),
-                ],
-              ),
-            ),
-            child: Stack(
+          // Header con zona y estado
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
               children: [
-                // Imagen de fondo si existe
-                if (stand.imagenUrl.isNotEmpty)
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(16),
-                      ),
-                      child: Image.network(
-                        stand.imagenUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  const Color(0xFF8B1B1B),
-                                  const Color(0xFF8B1B1B).withOpacity(0.8),
-                                ],
-                              ),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.store,
-                                size: 40,
-                                color: Colors.white.withOpacity(0.7),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  )
-                else
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          const Color(0xFF8B1B1B),
-                          const Color(0xFF8B1B1B).withOpacity(0.8),
-                        ],
-                      ),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.store,
-                        size: 40,
-                        color: Colors.white.withOpacity(0.7),
-                      ),
+                // Zona badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.grey.shade200,
+                      width: 1,
                     ),
                   ),
-
-                // Overlay con gradiente para mejorar legibilidad
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
-                    ),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.6),
-                      ],
+                  child: Text(
+                    stand.zonaNombre.isEmpty ? 'Sin zona' : stand.zonaNombre,
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ),
-
-                // Contenido del header
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
+                const Spacer(),
+                // Estado badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.grey.shade200,
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Zona badge
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
+                        width: 8,
+                        height: 8,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          stand.zonaNombre.isEmpty
-                              ? 'Sin zona'
-                              : stand.zonaNombre,
-                          style: const TextStyle(
-                            color: Color(0xFF8B1B1B),
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          color: Colors.green.shade400,
+                          shape: BoxShape.circle,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      // Nombre de la empresa
+                      const SizedBox(width: 6),
                       Text(
-                        stand.nombreEmpresa,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                        'Abierto',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
@@ -359,161 +411,235 @@ class _StandsEventoViewState extends State<StandsEventoView> {
               ],
             ),
           ),
-
-          // Contenido del stand
+          
+          // Contenido principal
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Nombre del stand
+                Text(
+                  stand.nombreEmpresa,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
+                    letterSpacing: -0.3,
+                    height: 1.2,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 12),
+                
                 // Descripción
-                if (stand.descripcion.isNotEmpty) ...[
-                  Text(
-                    stand.descripcion,
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 14,
-                      height: 1.4,
+                if (stand.descripcion.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      stand.descripcion,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                        height: 1.5,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 12),
-                ],
-
-                // Productos
-                if (stand.productos.isNotEmpty) ...[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.restaurant_menu,
-                        size: 16,
-                        color: const Color(0xFF8B1B1B),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Productos: ${stand.productos.join(', ')}',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 13,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                ],
-
-                // Contacto
-                Row(
-                  children: [
-                    if (stand.contacto.isNotEmpty) ...[
-                      Expanded(
-                        child: Row(
+                
+                // Productos si existen
+                if (stand.productos.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
                             Icon(
-                              Icons.person_outline,
+                              Icons.shopping_bag_outlined,
                               size: 16,
-                              color: const Color(0xFF8B1B1B),
+                              color: Colors.grey.shade500,
                             ),
                             const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                stand.contacto,
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 13,
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                            Text(
+                              'Productos disponibles:',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                    if (stand.telefono.isNotEmpty) ...[
-                      const SizedBox(width: 16),
-                      GestureDetector(
-                        onTap: () {
-                          // Aquí podrías abrir el dialer o WhatsApp
-                          _mostrarOpcionesContacto(stand.telefono);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
+                        const SizedBox(height: 6),
+                        Text(
+                          stand.productos.join(" • "),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade600,
+                            height: 1.4,
                           ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF8B1B1B),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.phone, size: 14, color: Colors.white),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Llamar',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                
+                // Información de contacto
+                if (stand.contacto.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.person_outline,
+                          size: 16,
+                          color: Colors.grey.shade500,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Contacto: ',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade700,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
-                    ],
-                  ],
-                ),
-                // Botón para valorar
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+                        Text(
+                          stand.contacto,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
+                
+                // Botones de acción
+                Row(
+                  children: [
+                    // Botón Valorar
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.orange.shade400, Colors.orange.shade600],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.orange.withOpacity(0.25),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
                         child: ElevatedButton.icon(
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                    // Import dinámico para evitar ciclos
-                                    // Usaremos la vista creada 'ComentariosView'
-                                    // que debe existir en views/visitante/comentarios_view.dart
-                                    // Pasar standId y nombre
-                                    ComentariosView(
-                                      standId: stand.id,
-                                      standNombre: stand.nombreEmpresa,
-                                    ),
+                                builder: (context) => ComentariosView(
+                                  standId: stand.id,
+                                  standNombre: stand.nombreEmpresa,
+                                ),
                               ),
                             );
                           },
-                          icon: const Icon(Icons.rate_review),
-                          label: const Text('Valorar'),
+                          icon: const Icon(
+                            Icons.star_rounded,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                          label: const Text(
+                            'Valorar',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF8B1B1B),
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            elevation: 0,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    
+                    const SizedBox(width: 12),
+                    
+                    // Botón Llamar
+                    if (stand.telefono.isNotEmpty)
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                const Color.fromARGB(255, 122, 0, 37),
+                                const Color(0xFF8B1B1B)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.25),
+                                blurRadius: 12,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: ElevatedButton.icon(
+                            onPressed: () => _mostrarOpcionesContacto(stand.telefono),
+                            icon: const Icon(
+                              Icons.phone_rounded,
+                              size: 18,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              'Llamar',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -633,83 +759,249 @@ class _StandsEventoViewState extends State<StandsEventoView> {
   void _mostrarOpcionesContacto(String telefono) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder:
-          (context) => Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Contactar',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF8B1B1B),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  telefono,
-                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          // Aquí implementarías la lógica para llamar
-                        },
-                        icon: const Icon(Icons.phone),
-                        label: const Text('Llamar'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF8B1B1B),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          // Aquí implementarías la lógica para WhatsApp
-                        },
-                        icon: const Icon(Icons.message),
-                        label: const Text('WhatsApp'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF25D366),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-              ],
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        margin: const EdgeInsets.only(top: 60),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 20,
+              spreadRadius: 5,
             ),
-          ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle indicator
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 50,
+              height: 5,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+            
+            // Header section
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Icon container
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color.fromARGB(255, 122, 0, 37).withOpacity(0.1),
+                          const Color.fromARGB(255, 122, 0, 37).withOpacity(0.05),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.1),
+                        width: 1,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.phone_rounded,
+                      size: 25,
+                      color: Color.fromARGB(255, 122, 0, 37),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Title
+                  const Text(
+                    'Contactar',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 6),
+                  
+                  // Phone number
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      telefono,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade700,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Action buttons
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  // Call button
+                  Container(
+                    width: double.infinity,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color.fromARGB(255, 122, 0, 37),
+                          const Color(0xFF8B1B1B),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _hacerLlamada(telefono);
+                      },
+                      icon: const Icon(
+                        Icons.phone_rounded,
+                        size: 22,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        'Llamar',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 10),
+                  
+                  // WhatsApp button
+                  Container(
+                    width: double.infinity,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xFF25D366),
+                          const Color(0xFF128C7E),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF25D366).withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _abrirWhatsApp(telefono);
+                      },
+                      icon: const Icon(
+                        Icons.chat_rounded,
+                        size: 22,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        'WhatsApp',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Cancel button
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      'Cancelar',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
     );
+  }
+
+  void _hacerLlamada(String telefono) {
+    // TODO: Implementar llamada telefónica
+    print('Llamando a: $telefono');
+  }
+
+  void _abrirWhatsApp(String telefono) {
+    // TODO: Implementar apertura de WhatsApp
+    print('Abriendo WhatsApp para: $telefono');
   }
 }

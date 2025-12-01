@@ -175,7 +175,7 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
 
   // Calcular tiempo restante usando hora de Perú
   String tiempoTexto = '';
-  Color tiempoColor = const Color(0xFF8B1B1B);
+  Color tiempoColor = const Color.fromARGB(255, 122, 0, 37);
   IconData tiempoIcon = Icons.schedule;
 
   if (fechaInicio != null) {
@@ -360,7 +360,7 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
                       children: [
                         Icon(
                           Icons.location_on_outlined,
-                          color: const Color(0xFF8B1B1B),
+                          color: const Color.fromARGB(255, 122, 0, 37),
                           size: 16,
                         ),
                         const SizedBox(width: 4),
@@ -444,11 +444,11 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF8B1B1B),
+                        color: const Color.fromARGB(255, 122, 0, 37),
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF8B1B1B).withOpacity(0.3),
+                            color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.3),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -521,7 +521,7 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
               icon: const Icon(Icons.refresh),
               label: const Text('Actualizar'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8B1B1B),
+                backgroundColor: const Color.fromARGB(255, 122, 0, 37),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -570,7 +570,7 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
               icon: const Icon(Icons.refresh),
               label: const Text('Reintentar'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8B1B1B),
+                backgroundColor: const Color.fromARGB(255, 122, 0, 37),
                 foregroundColor: Colors.white,
               ),
             ),
@@ -603,12 +603,12 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF8B1B1B).withOpacity(0.1),
+                  color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.event_busy_rounded,
-                  color: Color(0xFF8B1B1B),
+                  color: Color.fromARGB(255, 122, 0, 37),
                   size: 32,
                 ),
               ),
@@ -668,7 +668,7 @@ Widget _buildActividadCard(Map<String, dynamic> actividad) {
                         _removerActividad(actividadId);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8B1B1B),
+                        backgroundColor: const Color.fromARGB(255, 122, 0, 37),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(

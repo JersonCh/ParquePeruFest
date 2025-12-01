@@ -38,7 +38,7 @@ class _MisTicketsPageState extends State<MisTicketsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mis Tickets'),
-        backgroundColor: const Color(0xFF1976D2),
+        backgroundColor: const Color.fromARGB(255, 122, 0, 37),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),

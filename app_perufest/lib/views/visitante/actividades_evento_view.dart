@@ -106,147 +106,123 @@ class _ActividadesEventoViewState extends State<ActividadesEventoView>
     );
   }
   Widget _buildSliverAppBar() {
-    return SliverAppBar(
-      expandedHeight: 280.0,
-      floating: false,
-      pinned: true,
-      backgroundColor: const Color(0xFF8B1B1B),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
-        ),
-      ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.pop(context),
-      ),
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFF8B1B1B), // Guinda sólido
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
-            ),
+    return SliverToBoxAdapter(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 4),
+        decoration: const BoxDecoration(
+          color: Color.fromARGB(255, 122, 0, 37),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(24),
+            bottomRight: Radius.circular(24),
           ),
-          child: Stack(
+        ),
+        child: SafeArea(
+          child: Column(
             children: [
-              // Decoración sutil de fondo
-              Positioned(
-                right: -20,
-                top: 40,
-                child: Icon(
-                  Icons.celebration_outlined,
-                  size: 100,
-                  color: Colors.white.withOpacity(0.08),
+              // Título principal
+              Text(
+                'ACTIVIDADES ${widget.evento.nombre.toUpperCase()}',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
                 ),
+                textAlign: TextAlign.center,
               ),
-              // Contenido principal centrado
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Icono simple
-                      const Icon(
-                        Icons.festival,
-                        size: 60,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(height: 20),
-                      
-                      // Título del evento
-                      Text(
-                        widget.evento.nombre.toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      
-                      const SizedBox(height: 12),
-                      
-                      // Fecha destacada
-                      Text(
-                        '${_formatearFecha(widget.evento.fechaInicio)} - ${_formatearFecha(widget.evento.fechaFin)}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 0.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      
-                      const SizedBox(height: 8),
-                      
-                      // Subtítulo simple
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        child: Text(
-                          '"Todas las actividades del evento"',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w300,
-                            fontStyle: FontStyle.italic,
-                            letterSpacing: 0.3,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
+              const SizedBox(height: 4),
+              
+              // Fecha
+              Text(
+                '${_formatearFecha(widget.evento.fechaInicio)} - ${_formatearFecha(widget.evento.fechaFin)}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              
+              // Decoración central con icono
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 1,
+                    width: 40,
+                    color: Colors.white.withOpacity(0.4),
+                  ),
+                  const SizedBox(width: 10),
+                  const Icon(
+                    Icons.event,
+                    size: 18,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    height: 1,
+                    width: 40,
+                    color: Colors.white.withOpacity(0.4),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              
+              // Subtítulo en contenedor redondeado
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Text(
+                  '"Todas las actividades del evento"',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-      bottom: _diasEvento.isNotEmpty
-          ? PreferredSize(
-              preferredSize: const Size.fromHeight(50),
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Color(0xFF6B1515), // Guinda más oscuro
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
-                ),
-                child: TabBar(
+              
+              // Agregar las pestañas de fechas dentro de la cabecera
+              if (_diasEvento.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                TabBar(
                   controller: _tabController,
                   isScrollable: _diasEvento.length > 3,
                   labelColor: Colors.white,
-                  unselectedLabelColor: Colors.white.withOpacity(0.6),
+                  unselectedLabelColor: Colors.white.withOpacity(0.7),
                   indicatorColor: Colors.white,
                   indicatorWeight: 2,
-                  indicatorPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  indicator: UnderlineTabIndicator(
+                    borderSide: const BorderSide(width: 2, color: Colors.white),
+                    insets: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
                   labelStyle: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.3,
                   ),
                   unselectedLabelStyle: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w400,
-                    letterSpacing: 0.3,
                   ),
                   tabs: _diasEvento.map((dia) => Tab(
                     text: _formatearDiaTab(dia),
                   )).toList(),
                 ),
-              ),
-            )
-          : null,
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
+
   Widget _buildActividadesContent(ActividadesViewModel viewModel) {
     if (_diasEvento.isEmpty) {
       return SliverFillRemaining(
@@ -298,7 +274,8 @@ class _ActividadesEventoViewState extends State<ActividadesEventoView>
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Card(
-        elevation: 2,
+        elevation: 8,
+        shadowColor: Colors.black.withOpacity(0.15),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -310,6 +287,19 @@ class _ActividadesEventoViewState extends State<ActividadesEventoView>
               color: color.withOpacity(0.3),
               width: 1,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+                spreadRadius: 1,
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -420,7 +410,34 @@ class _ActividadesEventoViewState extends State<ActividadesEventoView>
                         ],
                       ),
                     ),
-                    // Botón compacto a la derecha
+                  ],
+                ),
+                const SizedBox(height: 12),
+                // Botones en la parte inferior
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Botón de valorar a la izquierda
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        // TODO: Implementar valoración
+                      },
+                      icon: const Icon(Icons.star, size: 16, color: Colors.orange),
+                      label: const Text('Valorar'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange.shade50,
+                        foregroundColor: Colors.orange.shade700,
+                        elevation: 2,
+                        side: BorderSide(color: Colors.orange.shade200),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        minimumSize: const Size(0, 32),
+                        textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    // Botón de agendar a la derecha
                     _buildBotonAgendarCompacto(actividad, color),
                   ],
                 ),

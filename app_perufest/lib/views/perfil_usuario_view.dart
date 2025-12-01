@@ -302,52 +302,58 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
     TextEditingController? controller,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: const Color(0xFFF1F5F9),
+          color: Colors.grey.shade100,
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            offset: const Offset(0, 2),
-            blurRadius: 12,
-          ),
-          BoxShadow(
             color: Colors.black.withOpacity(0.04),
-            offset: const Offset(0, 1),
-            blurRadius: 6,
+            offset: const Offset(0, 2),
+            blurRadius: 8,
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(18),
         child: Row(
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
+                  colors: [
+                    const Color.fromARGB(255, 122, 0, 37).withOpacity(0.15),
+                    const Color.fromARGB(255, 122, 0, 37).withOpacity(0.08),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    const Color(0xFF8B1B1B).withOpacity(0.1),
-                    const Color(0xFFB91C1C).withOpacity(0.15),
-                  ],
                 ),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.25),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Icon(
                 icon,
-                color: const Color(0xFF8B1B1B),
-                size: 24,
+                color: const Color.fromARGB(255, 122, 0, 37),
+                size: 22,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,13 +361,13 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       letterSpacing: 0.2,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   if (_isEditing && isEditable && controller != null)
                     Container(
                       decoration: BoxDecoration(
@@ -392,8 +398,8 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: Color(0xFF8B1B1B),
-                              width: 1.5,
+                              color: Color.fromARGB(255, 122, 0, 37),
+                              width: 2,
                             ),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -412,13 +418,39 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                       ),
                     )
                   else
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF1E293B),
-                        letterSpacing: 0.2,
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.white,
+                            Colors.grey.shade50,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.grey.shade200,
+                          width: 1.2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.08),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      width: double.infinity,
+                      child: Text(
+                        subtitle,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1E293B),
+                          letterSpacing: 0.3,
+                        ),
                       ),
                     ),
                 ],
@@ -433,70 +465,126 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
-
+      backgroundColor: Colors.grey.shade50,
       body: SingleChildScrollView(
         child: Column(
           children: [
             // Header con avatar elegante
             _buildElegantHeader(),
             
-            // Contenido principal
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Título de sección
-                    Text(
-                      'Información Personal',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
-                        letterSpacing: 0.3,
-                      ),
+            // Contenido principal más compacto
+            Transform.translate(
+              offset: const Offset(0, -15),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
                     ),
-                    const SizedBox(height: 20),
-
-                    // Tarjetas de información
-                    _buildInfoCard(
-                      title: 'Nombre de Usuario',
-                      subtitle: _usuarioController.text.isEmpty ? 'No especificado' : _usuarioController.text,
-                      icon: Icons.person_rounded,
-                      isEditable: true,
-                      controller: _usuarioController,
-                    ),
-                    _buildInfoCard(
-                      title: 'Correo Electrónico',
-                      subtitle: widget.userData['email'] ?? 'No especificado',
-                      icon: Icons.email_rounded,
-                      isEditable: false,
-                    ),
-                    _buildInfoCard(
-                      title: 'Número de Celular',
-                      subtitle: _celularController.text.isEmpty ? 'No especificado' : _celularController.text,
-                      icon: Icons.phone_rounded,
-                      isEditable: true,
-                      controller: _celularController,
-                    ),
-                    _buildInfoCard(
-                      title: 'Rol en el Sistema',
-                      subtitle: widget.userData['rol'] ?? 'Visitante',
-                      icon: Icons.verified_user_rounded,
-                      isEditable: false,
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // Botones de acción elegantes
-                    if (_isEditing) _buildActionButtons(),
                   ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Título de sección elegante
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'INFORMACIÓN PERSONAL',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: const Color.fromARGB(255, 122, 0, 37),
+                                letterSpacing: 1.2,
+                                shadows: [
+                                  Shadow(
+                                    offset: const Offset(0, 0.5),
+                                    blurRadius: 2,
+                                    color: Colors.black.withOpacity(0.1),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Container(
+                              height: 1.5,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    const Color.fromARGB(255, 122, 0, 37),
+                                    const Color.fromARGB(255, 122, 0, 37).withOpacity(0.4),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(0.75),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Sección de datos personales
+                        _buildSectionTitle('Datos de Acceso', Icons.account_circle_outlined),
+                        const SizedBox(height: 12),
+                        _buildInfoCard(
+                          title: 'Nombre de Usuario',
+                          subtitle: _usuarioController.text.isEmpty ? 'No especificado' : _usuarioController.text,
+                          icon: Icons.person_rounded,
+                          isEditable: true,
+                          controller: _usuarioController,
+                        ),
+                        _buildInfoCard(
+                          title: 'Correo Electrónico',
+                          subtitle: widget.userData['email'] ?? 'No especificado',
+                          icon: Icons.email_rounded,
+                          isEditable: false,
+                        ),
+                        
+                        const SizedBox(height: 16),
+                        _buildSectionTitle('Información de Contacto', Icons.contact_phone_outlined),
+                        const SizedBox(height: 12),
+                        _buildInfoCard(
+                          title: 'Número de Celular',
+                          subtitle: _celularController.text.isEmpty ? 'No especificado' : _celularController.text,
+                          icon: Icons.phone_rounded,
+                          isEditable: true,
+                          controller: _celularController,
+                        ),
+
+
+                        const SizedBox(height: 20),
+
+                        // Botones de acción elegantes
+                        if (_isEditing) 
+                          Container(
+                            padding: const EdgeInsets.only(top: 8),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                top: BorderSide(
+                                  color: Colors.grey.shade200,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: _buildActionButtons(),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
+            const SizedBox(height: 30),
           ],
         ),
       ),
@@ -511,17 +599,19 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF8B1B1B),
-            Color(0xFFB91C1C),
+            Color.fromARGB(255, 122, 0, 37),
             Color(0xFF8B1B1B),
           ],
-          stops: [0.0, 0.5, 1.0],
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
         ),
       ),
       child: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             
             // AppBar personalizada
             Padding(
@@ -529,46 +619,54 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              Icons.person,
-                              color: Colors.white.withOpacity(0.9),
-                              size: 16,
-                            ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'MI PERFIL',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 22,
+                            letterSpacing: 2.5,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                offset: const Offset(0, 2),
+                                blurRadius: 4,
+                                color: Colors.black.withOpacity(0.3),
+                              ),
+                              Shadow(
+                                offset: const Offset(0, 1),
+                                blurRadius: 8,
+                                color: Colors.black.withOpacity(0.2),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 12),
-                          const Text(
-                            'Mi Perfil',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18,
-                              letterSpacing: 0.3,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
+                          textAlign: TextAlign.center,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          height: 1,
+                          width: 60,
+                          color: Colors.white.withOpacity(0.6),
+                        ),
+                      ],
                     ),
                   ),
                   if (!_isEditing)
-                    GestureDetector(
-                      onTap: () => setState(() => _isEditing = true),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                          width: 1,
                         ),
-                        child: const Icon(
+                      ),
+                      child: IconButton(
+                        onPressed: () => setState(() => _isEditing = true),
+                        icon: const Icon(
                           Icons.edit_rounded,
                           color: Colors.white,
                           size: 20,
@@ -586,8 +684,8 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               children: [
                 // Avatar principal
                 Container(
-                  width: 120,
-                  height: 120,
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
@@ -619,9 +717,9 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                                 .toString()
                                 .toUpperCase()[0],
                             style: const TextStyle(
-                              fontSize: 36,
+                              fontSize: 30,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF8B1B1B),
+                              color: Color.fromARGB(255, 122, 0, 37),
                             ),
                           )
                         : null,
@@ -677,55 +775,56 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
             
             const SizedBox(height: 24),
             
-            // Información del usuario
-            Text(
-              _usuarioController.text.isNotEmpty
-                  ? _usuarioController.text
-                  : 'Usuario',
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-                letterSpacing: 0.5,
-              ),
-            ),
-            
-            const SizedBox(height: 12),
-            
+            // Información del usuario con estilo elegante
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
-                  width: 1,
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withOpacity(0.25),
+                    Colors.white.withOpacity(0.12),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.verified_rounded,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    widget.userData['rol'] ?? 'Visitante',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.3,
-                    ),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.4),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
+              child: Text(
+                (_usuarioController.text.isNotEmpty
+                    ? _usuarioController.text
+                    : 'Usuario').toUpperCase(),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: 2.0,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0, 3),
+                      blurRadius: 6,
+                      color: Colors.black45,
+                    ),
+                    Shadow(
+                      offset: Offset(0, 1),
+                      blurRadius: 12,
+                      color: Colors.black26,
+                    ),
+                  ],
+                ),
+              ),
             ),
+
             
             const SizedBox(height: 40),
           ],
@@ -754,20 +853,20 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                   ? null
                   : () => setState(() => _isEditing = false),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF1F5F9),
+                backgroundColor: Colors.grey.shade100,
                 foregroundColor: Colors.grey[700],
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
                 ),
               ),
               child: const Text(
-                'Cancelar',
+                'CANCELAR',
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0.3,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
               ),
             ),
@@ -780,9 +879,9 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF8B1B1B).withOpacity(0.3),
+                  color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.35),
                   offset: const Offset(0, 4),
-                  blurRadius: 12,
+                  blurRadius: 14,
                 ),
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
@@ -794,12 +893,12 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
             child: ElevatedButton(
               onPressed: _isLoading ? null : _guardarCambios,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8B1B1B),
+                backgroundColor: const Color.fromARGB(255, 122, 0, 37),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
                 ),
               ),
               child: _isLoading
@@ -814,17 +913,69 @@ class _PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                       ),
                     )
                   : const Text(
-                      'Guardar Cambios',
+                      'GUARDAR CAMBIOS',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.3,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.0,
+                        shadows: [
+                          Shadow(
+                            offset: Offset(0, 1),
+                            blurRadius: 2,
+                            color: Colors.black26,
+                          ),
+                        ],
                       ),
                     ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color.fromARGB(255, 122, 0, 37).withOpacity(0.08),
+            const Color.fromARGB(255, 122, 0, 37).withOpacity(0.04),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color.fromARGB(255, 122, 0, 37).withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: const Color.fromARGB(255, 122, 0, 37),
+            size: 16,
+          ),
+          const SizedBox(width: 10),
+          Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: const Color.fromARGB(255, 122, 0, 37),
+              letterSpacing: 1.2,
+              shadows: [
+                Shadow(
+                  offset: const Offset(0, 0.5),
+                  blurRadius: 1,
+                  color: Colors.black.withOpacity(0.1),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
