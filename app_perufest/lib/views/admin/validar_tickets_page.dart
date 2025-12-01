@@ -352,7 +352,8 @@ class _ValidarTicketsPageState extends State<ValidarTicketsPage> {
   }
 
   void _onDetectQR(BarcodeCapture capture) async {
-    if (_procesandoQR) return;
+    // Evitar múltiples escaneos
+    if (_procesandoQR || _ultimoTicketValidado != null || _mensajeError != null) return;
     
     final List<Barcode> barcodes = capture.barcodes;
     if (barcodes.isEmpty) return;
@@ -360,6 +361,9 @@ class _ValidarTicketsPageState extends State<ValidarTicketsPage> {
     final String? qrData = barcodes.first.rawValue;
     if (qrData == null || qrData.isEmpty) return;
 
+    // Detener el scanner inmediatamente
+    await _scannerController.stop();
+    
     setState(() {
       _procesandoQR = true;
       _mensajeError = null;
@@ -378,6 +382,7 @@ class _ValidarTicketsPageState extends State<ValidarTicketsPage> {
       setState(() {
         _ultimoTicketValidado = ticket;
         _mensajeError = null;
+        _procesandoQR = false;
       });
 
       // Sonido/vibración de éxito (opcional)
@@ -387,23 +392,22 @@ class _ValidarTicketsPageState extends State<ValidarTicketsPage> {
       setState(() {
         _mensajeError = e.toString().replaceAll('Exception: ', '');
         _ultimoTicketValidado = null;
+        _procesandoQR = false;
       });
 
       // Sonido/vibración de error (opcional)
       // HapticFeedback.vibrate();
-      
-    } finally {
-      setState(() {
-        _procesandoQR = false;
-      });
     }
   }
 
-  void _reiniciarScanner() {
+  void _reiniciarScanner() async {
     setState(() {
       _mensajeError = null;
       _ultimoTicketValidado = null;
       _procesandoQR = false;
     });
+    
+    // Reiniciar el scanner
+    await _scannerController.start();
   }
 }
