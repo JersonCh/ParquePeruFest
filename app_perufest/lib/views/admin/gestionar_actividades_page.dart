@@ -290,11 +290,18 @@ class _GestionarActividadesPageState extends State<GestionarActividadesPage>
   }
 
   void _crearNuevaActividad() async {
+    // Obtener la fecha de la pestaña actual si existe un tab controller
+    DateTime? fechaPestanaActual;
+    if (_tabController != null && _diasEvento.isNotEmpty) {
+      fechaPestanaActual = _diasEvento[_tabController!.index];
+    }
+    
     final resultado = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CrearActividadPage(
           evento: widget.evento,
+          fechaInicial: fechaPestanaActual,
         ),
       ),
     );

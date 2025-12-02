@@ -9,11 +9,13 @@ import '../../services/timezone.dart';
 class CrearActividadPage extends StatefulWidget {
   final Evento evento;
   final Actividad? actividad; // null para crear, no null para editar
+  final DateTime? fechaInicial; // Fecha de la pestaña seleccionada
 
   const CrearActividadPage({
     super.key,
     required this.evento,
     this.actividad,
+    this.fechaInicial,
   });
 
   bool get esEdicion => actividad != null;
@@ -65,6 +67,10 @@ class _CrearActividadPageState extends State<CrearActividadPage> {
         _horaFinSeleccionada = TimeOfDay.fromDateTime(actividad.fechaFin);
         _zonaSeleccionada = actividad.zona;
         
+        _actualizarControladores();
+      } else if (widget.fechaInicial != null) {
+        // Si viene de una pestaña específica, usar esa fecha
+        _fechaSeleccionada = widget.fechaInicial;
         _actualizarControladores();
       }
     } catch (e) {
@@ -235,16 +241,23 @@ class _CrearActividadPageState extends State<CrearActividadPage> {
   }
 
   Widget _buildCampoFecha() {
+    // Bloquear el campo si viene de una pestaña específica (fechaInicial no es null)
+    final bool fechaBloqueada = widget.fechaInicial != null;
+    
     return TextFormField(
       controller: _fechaController,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         labelText: 'Fecha de la actividad',
         hintText: 'Selecciona una fecha',
-        prefixIcon: Icon(Icons.calendar_today),
-        border: OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.calendar_today),
+        border: const OutlineInputBorder(),
+        suffixIcon: fechaBloqueada 
+            ? const Icon(Icons.lock, size: 20, color: Colors.grey)
+            : null,
       ),
       readOnly: true,
-      onTap: _seleccionarFecha,
+      enabled: !fechaBloqueada, // Deshabilitar si está bloqueada
+      onTap: fechaBloqueada ? null : _seleccionarFecha,
       validator: (value) {
         if (_fechaSeleccionada == null) {
           return 'Por favor selecciona una fecha';
